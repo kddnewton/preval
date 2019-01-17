@@ -1,11 +1,17 @@
-require "test_helper"
+require 'test_helper'
 
 class PrepackTest < Minitest::Test
-  def test_that_it_has_a_version_number
-    refute_nil ::Prepack::VERSION
+  Dir[File.join(__dir__, '*.test')].each do |filepath|
+    input, output = File.read(filepath).split("---\n")
+
+    define_method(:"test_#{File.basename(filepath)}") do
+      assert_equal output, process(input)
+    end
   end
 
-  def test_it_does_something_useful
-    assert false
+  private
+
+  def process(source)
+    Prepack.process(source)
   end
 end

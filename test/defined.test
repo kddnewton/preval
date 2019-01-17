@@ -1,0 +1,7 @@
+defined? a
+
+defined?(a)
+
+---
+defined?(a)
+defined?(a)
