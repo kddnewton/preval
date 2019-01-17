@@ -31,6 +31,10 @@ module Prepack
         node.body.map(&:to_source).join(delim)
       end
 
+      def starts?(type)
+        node.body[0].type == type
+      end
+
       def source(index)
         node.body[index].to_source
       end
@@ -47,21 +51,10 @@ module Prepack
       end
     end
 
-    set :alias, :var_alias do
-      "alias #{source(0)} #{source(1)}"
-    end
-
-    set :aref do
-      node.body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]"
-    end
-
-    set :aref_field do
-      "#{source(0)}[#{source(1)}]"
-    end
-
-    set :args_add do
-      type(0) == :args_new ? source(1) : join(',')
-    end
+    set(:alias, :var_alias) { "alias #{source(0)} #{source(1)}" }
+    set(:aref) { node.body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
+    set(:aref_field) { "#{source(0)}[#{source(1)}]" }
+    set(:args_add) { starts?(:args_new) ? source(1) : join(',') }
 
     set :args_add_block do
       args, block = node.body
@@ -72,156 +65,43 @@ module Prepack
       parts.join
     end
 
-    set :args_add_star do
-      type(0) == :args_new ? "*#{source(1)}" : "#{source(0)},*#{source(1)}"
-    end
-
-    set :assign do
-      "#{source(0)} = #{source(1)}"
-    end
-
-    set :array do
-      return '[]' if node.body[0].nil?
-      "#{type(0) == :args_add ? '[' : ''}#{source(0)}]"
-    end
-
-    set :begin do
-      "begin\n#{join("\n")}\nend"
-    end
-
-    set :binary do
-      "#{source(0)} #{node.body[1]} #{source(2)}"
-    end
-
-    set :bodystmt do
-      node.body.compact.map(&:to_source).join("\n")
-    end
-
-    set :defined do
-      "defined?(#{source(0)})"
-    end
-
-    set :field do
-      join
-    end
-
-    set :lit_gvar, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content do
-      node.body
-    end
-
-    set :massign do
-      "#{source(0)} = #{source(1)}"
-    end
-
-    set :mlhs_add do
-      type(0) == :mlhs_new ? source(1) : join(',')
-    end
-
-    set :mlhs_add_post do
-      join(',')
-    end
-
-    set :mlhs_add_star do
-      left = type(0) == :mlhs_new ? '' : "#{source(0)},"
-      right = node.body[1] ? "*#{source(1)}" : '*'
-      "#{left}#{right}"
-    end
-
-    set :mlhs_paren do
-      "(#{source(0)})"
-    end
-
-    set :mrhs_add do
-      join(',')
-    end
-
-    set :mrhs_add_star do
-      "*#{join}"
-    end
-
-    set :mrhs_new do
-      ''
-    end
-
-    set :mrhs_new_from_args do
-      source(0)
-    end
-
-    set :opassign do
-      join(' ')
-    end
-
-    set :program do
-      "#{join("\n")}\n"
-    end
-
-    set :qsymbols_add do
-      join(type(0) == :qsymbols_new ? '' : ' ')
-    end
-
-    set :qsymbols_new do
-      "%i["
-    end
-
-    set :qwords_add do
-      join(type(0) == :qwords_new ? '' : ' ')
-    end
-
-    set :qwords_new do
-      "%w["
-    end
-
-    set :stmts_add do
-      type(0) == :stmts_new ? source(1) : join("\n")
-    end
-
-    set :string_add, :var_field, :vcall, :word_add do
-      join
-    end
-
-    set :string_content do
-      ''
-    end
-
-    set :string_embexpr do
-      "\#{#{source(0)}}"
-    end
-
-    set :string_literal do
-      "\"#{source(0)}\""
-    end
-
-    set :symbol do
-      ":#{source(0)}"
-    end
-
-    set :symbol_literal do
-      source(0)
-    end
-
-    set :symbols_add do
-      join(type(0) == :symbols_new ? '' : ' ')
-    end
-
-    set :symbols_new do
-      "%I["
-    end
-
-    set :var_ref do
-      source(0)
-    end
-
-    set :word_new do
-      ''
-    end
-
-    set :words_add do
-      join(type(0) == :words_new ? '' : ' ')
-    end
-
-    set :words_new do
-      "%W["
-    end
+    set(:args_add_star) { starts?(:args_new) ? "*#{source(1)}" : "#{source(0)},*#{source(1)}" }
+    set(:assign) { "#{source(0)} = #{source(1)}" }
+    set(:array) { node.body[0].nil? ? '[]' : "#{starts?(:args_add) ? '[' : ''}#{source(0)}]" }
+    set(:begin) { "begin\n#{join("\n")}\nend" }
+    set(:binary) { "#{source(0)} #{node.body[1]} #{source(2)}" }
+    set(:bodystmt) { node.body.compact.map(&:to_source).join("\n") }
+    set(:defined) { "defined?(#{source(0)})" }
+    set(:field) { join }
+    set(:lit_gvar, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { node.body }
+    set(:massign) { join(' = ') }
+    set(:mlhs_add) { starts?(:mlhs_new) ? source(1) : join(',') }
+    set(:mlhs_add_post) { join(',') }
+    set(:mlhs_add_star) { "#{starts?(:mlhs_new) ? '' : "#{source(0)},"}#{node.body[1] ? "*#{source(1)}" : '*'}" }
+    set(:mlhs_paren) { "(#{source(0)})" }
+    set(:mrhs_add) { join(',') }
+    set(:mrhs_add_star) { "*#{join}" }
+    set(:mrhs_new) { '' }
+    set(:mrhs_new_from_args) { source(0) }
+    set(:opassign) { join(' ') }
+    set(:program) { "#{join("\n")}\n" }
+    set(:qsymbols_add) { join(starts?(:qsymbols_new) ? '' : ' ') }
+    set(:qsymbols_new) { '%i[' }
+    set(:qwords_add) { join(starts?(:qwords_new) ? '' : ' ') }
+    set(:qwords_new) { '%w[' }
+    set(:stmts_add) { starts?(:stmts_new) ? source(1) : join("\n") }
+    set(:string_add, :var_field, :vcall, :word_add) { join }
+    set(:string_content) { '' }
+    set(:string_embexpr) { "\#{#{source(0)}}" }
+    set(:string_literal) { "\"#{source(0)}\"" }
+    set(:symbol) { ":#{source(0)}" }
+    set(:symbol_literal) { source(0) }
+    set(:symbols_add) { join(starts?(:symbols_new) ? '' : ' ') }
+    set(:symbols_new) { '%I[' }
+    set(:var_ref) { source(0) }
+    set(:word_new) { '' }
+    set(:words_add) { join(starts?(:words_new) ? '' : ' ') }
+    set(:words_new) { '%W[' }
   end
 end
 
