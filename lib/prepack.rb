@@ -77,7 +77,7 @@ module Prepack
     set(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     set(:END) { "END {\n#{source(0)}\n}"}
     set(:field) { join }
-    set(:lit_gvar, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
+    set(:lit_gvar, :lit_kw, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
     set(:massign) { join(' = ') }
     set(:method_add_block) { join }
     set(:mlhs_add) { starts?(:mlhs_new) ? source(1) : join(',') }
@@ -119,7 +119,11 @@ module Prepack
     set(:symbol_literal) { source(0) }
     set(:symbols_add) { join(starts?(:symbols_new) ? '' : ' ') }
     set(:symbols_new) { '%I[' }
+    set(:until) { "until #{source(0)}\n#{source(1)}\nend" }
+    set(:until_mod) { "#{source(1)} until #{source(0)}" }
     set(:var_ref) { source(0) }
+    set(:while) { "while #{source(0)}\n#{source(1)}\nend" }
+    set(:while_mod) { "#{source(1)} while #{source(0)}" }
     set(:word_new) { '' }
     set(:words_add) { join(starts?(:words_new) ? '' : ' ') }
     set(:words_new) { '%W[' }

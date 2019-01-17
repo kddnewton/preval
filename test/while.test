@@ -1,0 +1,20 @@
+while true
+  1
+end
+
+1 while true
+
+until true
+  1
+end
+
+1 until true
+---
+while true
+1
+end
+1 while true
+until true
+1
+end
+1 until true
