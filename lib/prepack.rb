@@ -80,7 +80,12 @@ module Prepack
     set(:defined) { "defined?(#{source(0)})" }
     set(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     set(:END) { "END {\n#{source(0)}\n}"}
+    set(:else) { "else\n#{source(0)}" }
+    set(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
     set(:field) { join }
+    set(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
+    set(:if_mod) { "#{source(1)} if #{source(0)}" }
+    set(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
     set(:lit_const, :lit_gvar, :lit_kw, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
     set(:massign) { join(' = ') }
     set(:method_add_block) { join }
@@ -127,6 +132,8 @@ module Prepack
     set(:symbols_new) { '%I[' }
     set(:top_const_field, :top_const_ref) { "::#{source(0)}" }
     set(:undef) { "undef #{body[0][0].to_source}" }
+    set(:unless) { "unless #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
+    set(:unless_mod) { "#{source(1)} unless #{source(0)}" }
     set(:until) { "until #{source(0)}\n#{source(1)}\nend" }
     set(:until_mod) { "#{source(1)} until #{source(0)}" }
     set(:var_ref) { source(0) }
