@@ -24,54 +24,159 @@ module Prepack
       def initialize(node)
         @node = node
       end
+
+      private
+
+      def source(index)
+        node.body[index].to_source
+      end
+
+      def type(index)
+        node.body[index].type
+      end
     end
 
     def self.set(*types, &block)
       types.each do |type|
-        const_set(type, Class.new(Node) { define_method(:to_source, &block) })
+        clazz = Class.new(Node) { define_method(:to_source, &block) }
+        const_set(type.upcase, clazz)
       end
     end
 
-    set :ALIAS, :VAR_ALIAS do
-      left, right = node.body
-      "alias #{left.to_source} #{right.to_source}"
+    set :alias, :var_alias do
+      "alias #{source(0)} #{source(1)}"
     end
 
-    set :BINARY do
-      left, op, right = node.body
-      "#{left.to_source} #{op} #{right.to_source}"
+    set :aref do
+      node.body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]"
     end
 
-    set :DEFINED do
-      "defined?(#{node.body[0].to_source})"
+    set :aref_field do
+      "#{source(0)}[#{source(1)}]"
     end
 
-    set :LIT_GVAR, :LIT_IDENT, :LIT_INT do
+    set :args_add do
+      if type(0) == :args_new
+        source(1)
+      else
+        node.body.map(&:to_source).join(',')
+      end
+    end
+
+    set :args_add_block do
+      args, block = node.body
+
+      parts = args.type == :args_new ? [] : [args.to_source]
+      parts << parts.any? ? ',' : "&#{block.to_source}" if block
+
+      parts.join
+    end
+
+    set :args_add_star do
+      star = "*#{source(1)}"
+      type(0) == :args_new ? star : "#{source(0)},#{star}"
+    end
+
+    set :assign do
+      "#{source(0)} = #{source(1)}"
+    end
+
+    set :array do
+      return '[]' if node.body[0].nil?
+      "#{type(0) == :args_add ? '[' : ''}#{source(0)}]"
+    end
+
+    set :binary do
+      "#{source(0)} #{node.body[1]} #{source(2)}"
+    end
+
+    set :defined do
+      "defined?(#{source(0)})"
+    end
+
+    set :lit_gvar, :lit_ident, :lit_int, :lit_tstring_content do
       node.body
     end
 
-    set :PROGRAM do
+    set :program do
       "#{node.body.map(&:to_source).join("\n")}\n"
     end
 
-    set :STMTS_ADD do
-      if node.body[0].type == :stmts_new
-        node.body[1].to_source
+    set :qsymbols_add do
+      node.body.map(&:to_source).join(type(0) == :qsymbols_new ? '' : ' ')
+    end
+
+    set :qsymbols_new do
+      "%i["
+    end
+
+    set :qwords_add do
+      node.body.map(&:to_source).join(type(0) == :qwords_new ? '' : ' ')
+    end
+
+    set :qwords_new do
+      "%w["
+    end
+
+    set :stmts_add do
+      if type(0) == :stmts_new
+        source(1)
       else
         node.body.map(&:to_source).join("\n")
       end
     end
 
-    set :SYMBOL do
-      ":#{node.body[0].to_source}"
-    end
-
-    set :SYMBOL_LITERAL do
-      node.body[0].to_source
-    end
-
-    set :VCALL do
+    set :string_add do
       node.body.map(&:to_source).join
+    end
+
+    set :string_content do
+      return '' if node.body.length.zero?
+      raise ArgumentError
+    end
+
+    set :string_embexpr do
+      "\#{#{source(0)}}"
+    end
+
+    set :string_literal do
+      "\"#{source(0)}\""
+    end
+
+    set :symbol do
+      ":#{source(0)}"
+    end
+
+    set :symbol_literal do
+      source(0)
+    end
+
+    set :symbols_add do
+      node.body.map(&:to_source).join(type(0) == :symbols_new ? '' : ' ')
+    end
+
+    set :symbols_new do
+      "%I["
+    end
+
+    set :vcall do
+      node.body.map(&:to_source).join
+    end
+
+    set :word_add do
+      node.body.map(&:to_source).join
+    end
+
+    set :word_new do
+      ''
+    end
+
+    set :words_add do
+      node.body.map(&:to_source).join(type(0) == :words_new ? '' : ' ')
+    end
+
+    set :words_new do
+      "%W["
     end
   end
 end
