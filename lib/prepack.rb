@@ -69,13 +69,17 @@ module Prepack
     set(:begin) { "begin\n#{join("\n")}\nend" }
     set(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
     set(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
+    set(:block_var) { "|#{source(0)}|" }
     set(:bodystmt) { body.compact.map(&:to_source).join("\n") }
+    set(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
     set(:command) { join(' ') }
     set(:defined) { "defined?(#{source(0)})" }
+    set(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     set(:END) { "END {\n#{source(0)}\n}"}
     set(:field) { join }
     set(:lit_gvar, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
     set(:massign) { join(' = ') }
+    set(:method_add_block) { join }
     set(:mlhs_add) { starts?(:mlhs_new) ? source(1) : join(',') }
     set(:mlhs_add_post) { join(',') }
     set(:mlhs_add_star) { "#{starts?(:mlhs_new) ? '' : "#{source(0)},"}#{body[1] ? "*#{source(1)}" : '*'}" }
@@ -85,6 +89,21 @@ module Prepack
     set(:mrhs_new) { '' }
     set(:mrhs_new_from_args) { source(0) }
     set(:opassign) { join(' ') }
+    set(:paren) { "(#{join})" }
+    set(:params) do
+      reqs, opts, rest, post, kwargs, kwarg_rest, block = body
+      parts = []
+
+      parts << reqs.map(&:to_source).join if reqs
+      parts += opts.map { |opt| "#{opt[0]} = #{opt[1]}" } if opts
+      parts << rest.to_source if rest
+      parts << post.map(&:to_source).join if post
+      parts += kwargs.map { |(kwarg, value)| value ? "#{kwarg} #{value}" : kwarg } if kwargs
+      parts << kwarg_rest.to_source if kwarg_rest
+      parts << block.to_source if block
+
+      parts.join(',')
+    end
     set(:program) { "#{join("\n")}\n" }
     set(:qsymbols_add) { join(starts?(:qsymbols_new) ? '' : ' ') }
     set(:qsymbols_new) { '%i[' }
@@ -104,6 +123,7 @@ module Prepack
     set(:word_new) { '' }
     set(:words_add) { join(starts?(:words_new) ? '' : ' ') }
     set(:words_new) { '%W[' }
+    set(:yield) { "yield #{join}" }
     set(:yield0) { 'yield' }
     set(:zsuper) { 'super' }
 
