@@ -17,67 +17,65 @@ module Prepack
 end
 
 module Prepack
-  module Translate
-    class Node
-      attr_reader :node
+  class Node
+    attr_reader :type, :body
 
-      def initialize(node)
-        @node = node
+    def initialize(type, body)
+      @type = type
+      @body = body
+    end
+
+    def each_child
+      return if type.to_s.start_with?('lit_')
+
+      body.each do |child|
+        yield child if child.is_a?(Node)
       end
+    end
 
-      private
+    def replace(type, body)
+      @type = type
+      @body = body
+    end
 
-      def join(delim = '')
-        node.body.map(&:to_source).join(delim)
-      end
-
-      def starts?(type)
-        node.body[0].type == type
-      end
-
-      def source(index)
-        node.body[index].to_source
-      end
-
-      def type(index)
-        node.body[index].type
-      end
+    def to_source
+      public_send(:"to_#{type}_source")
     end
 
     def self.set(*types, &block)
       types.each do |type|
-        clazz = Class.new(Node) { define_method(:to_source, &block) }
-        const_set(type.upcase, clazz)
+        define_method(:"to_#{type}_source", &block)
       end
     end
 
     set(:alias, :var_alias) { "alias #{source(0)} #{source(1)}" }
-    set(:aref) { node.body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
+    set(:aref) { body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
     set(:aref_field) { "#{source(0)}[#{source(1)}]" }
     set(:args_add) { starts?(:args_new) ? source(1) : join(',') }
-
-    set :args_add_block do
-      args, block = node.body
+    set(:args_add_block) do
+      args, block = body
 
       parts = args.type == :args_new ? [] : [args.to_source]
       parts << parts.any? ? ',' : "&#{block.to_source}" if block
 
       parts.join
     end
-
     set(:args_add_star) { starts?(:args_new) ? "*#{source(1)}" : "#{source(0)},*#{source(1)}" }
     set(:assign) { "#{source(0)} = #{source(1)}" }
-    set(:array) { node.body[0].nil? ? '[]' : "#{starts?(:args_add) ? '[' : ''}#{source(0)}]" }
+    set(:array) { body[0].nil? ? '[]' : "#{starts?(:args_add) ? '[' : ''}#{source(0)}]" }
     set(:begin) { "begin\n#{join("\n")}\nend" }
-    set(:binary) { "#{source(0)} #{node.body[1]} #{source(2)}" }
-    set(:bodystmt) { node.body.compact.map(&:to_source).join("\n") }
+    set(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
+    set(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
+    set(:bodystmt) { body.compact.map(&:to_source).join("\n") }
+    set(:command) { join(' ') }
     set(:defined) { "defined?(#{source(0)})" }
+    set(:END) { "END {\n#{source(0)}\n}"}
     set(:field) { join }
-    set(:lit_gvar, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { node.body }
+    set(:lit_gvar, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
     set(:massign) { join(' = ') }
     set(:mlhs_add) { starts?(:mlhs_new) ? source(1) : join(',') }
     set(:mlhs_add_post) { join(',') }
-    set(:mlhs_add_star) { "#{starts?(:mlhs_new) ? '' : "#{source(0)},"}#{node.body[1] ? "*#{source(1)}" : '*'}" }
+    set(:mlhs_add_star) { "#{starts?(:mlhs_new) ? '' : "#{source(0)},"}#{body[1] ? "*#{source(1)}" : '*'}" }
     set(:mlhs_paren) { "(#{source(0)})" }
     set(:mrhs_add) { join(',') }
     set(:mrhs_add_star) { "*#{join}" }
@@ -102,33 +100,19 @@ module Prepack
     set(:word_new) { '' }
     set(:words_add) { join(starts?(:words_new) ? '' : ' ') }
     set(:words_new) { '%W[' }
-  end
-end
 
-module Prepack
-  class Node
-    attr_reader :type, :body
+    private
 
-    def initialize(type, body)
-      @type = type
-      @body = body
+    def join(delim = '')
+      body.map(&:to_source).join(delim)
     end
 
-    def each_child
-      return if type.to_s.start_with?('lit_')
-
-      body.each do |child|
-        yield child if child.is_a?(Node)
-      end
+    def starts?(type)
+      body[0].type == type
     end
 
-    def replace(type, body)
-      @type = type
-      @body = body
-    end
-
-    def to_source
-      Translate.const_get(type.upcase).new(self).to_source
+    def source(index)
+      body[index].to_source
     end
   end
 end

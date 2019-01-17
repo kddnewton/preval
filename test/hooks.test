@@ -1,0 +1,11 @@
+BEGIN { p 'begin' }
+
+END { p 'end' }
+
+---
+BEGIN {
+p "begin"
+}
+END {
+p "end"
+}
