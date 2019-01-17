@@ -40,6 +40,8 @@ module Prepack
 
     def to_source
       public_send(:"to_#{type}_source")
+    rescue NoMethodError
+      raise NotImplementedError, "#{type} has not yet been implemented"
     end
 
     def self.set(*types, &block)
@@ -51,6 +53,7 @@ module Prepack
     set(:alias, :var_alias) { "alias #{source(0)} #{source(1)}" }
     set(:aref) { body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
     set(:aref_field) { "#{source(0)}[#{source(1)}]" }
+    set(:arg_paren) { body[0].nil? ? '' : "(#{source(0)})" }
     set(:args_add) { starts?(:args_new) ? source(1) : join(',') }
     set(:args_add_block) do
       args, block = body
@@ -92,6 +95,7 @@ module Prepack
     set(:string_content) { '' }
     set(:string_embexpr) { "\#{#{source(0)}}" }
     set(:string_literal) { "\"#{source(0)}\"" }
+    set(:super) { "super#{starts?(:arg_paren) ? '' : ' '}#{source(0)}" }
     set(:symbol) { ":#{source(0)}" }
     set(:symbol_literal) { source(0) }
     set(:symbols_add) { join(starts?(:symbols_new) ? '' : ' ') }
@@ -100,6 +104,8 @@ module Prepack
     set(:word_new) { '' }
     set(:words_add) { join(starts?(:words_new) ? '' : ' ') }
     set(:words_new) { '%W[' }
+    set(:yield0) { 'yield' }
+    set(:zsuper) { 'super' }
 
     private
 
