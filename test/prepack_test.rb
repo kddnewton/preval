@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class PrepackTest < Minitest::Test
-  Dir[File.join(__dir__, '*.test')].each do |filepath|
+  Dir[File.join(__dir__, 'cases', '*.test')].each do |filepath|
     input, output = File.read(filepath).split("---\n")
 
     define_method(:"test_#{File.basename(filepath)}") do
