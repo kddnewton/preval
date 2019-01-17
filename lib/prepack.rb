@@ -27,6 +27,10 @@ module Prepack
 
       private
 
+      def join(delim = '')
+        node.body.map(&:to_source).join(delim)
+      end
+
       def source(index)
         node.body[index].to_source
       end
@@ -56,11 +60,7 @@ module Prepack
     end
 
     set :args_add do
-      if type(0) == :args_new
-        source(1)
-      else
-        node.body.map(&:to_source).join(',')
-      end
+      type(0) == :args_new ? source(1) : join(',')
     end
 
     set :args_add_block do
@@ -73,8 +73,7 @@ module Prepack
     end
 
     set :args_add_star do
-      star = "*#{source(1)}"
-      type(0) == :args_new ? star : "#{source(0)},#{star}"
+      type(0) == :args_new ? "*#{source(1)}" : "#{source(0)},*#{source(1)}"
     end
 
     set :assign do
@@ -86,24 +85,78 @@ module Prepack
       "#{type(0) == :args_add ? '[' : ''}#{source(0)}]"
     end
 
+    set :begin do
+      "begin\n#{join("\n")}\nend"
+    end
+
     set :binary do
       "#{source(0)} #{node.body[1]} #{source(2)}"
+    end
+
+    set :bodystmt do
+      node.body.compact.map(&:to_source).join("\n")
     end
 
     set :defined do
       "defined?(#{source(0)})"
     end
 
-    set :lit_gvar, :lit_ident, :lit_int, :lit_tstring_content do
+    set :field do
+      join
+    end
+
+    set :lit_gvar, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content do
       node.body
     end
 
+    set :massign do
+      "#{source(0)} = #{source(1)}"
+    end
+
+    set :mlhs_add do
+      type(0) == :mlhs_new ? source(1) : join(',')
+    end
+
+    set :mlhs_add_post do
+      join(',')
+    end
+
+    set :mlhs_add_star do
+      left = type(0) == :mlhs_new ? '' : "#{source(0)},"
+      right = node.body[1] ? "*#{source(1)}" : '*'
+      "#{left}#{right}"
+    end
+
+    set :mlhs_paren do
+      "(#{source(0)})"
+    end
+
+    set :mrhs_add do
+      join(',')
+    end
+
+    set :mrhs_add_star do
+      "*#{join}"
+    end
+
+    set :mrhs_new do
+      ''
+    end
+
+    set :mrhs_new_from_args do
+      source(0)
+    end
+
+    set :opassign do
+      join(' ')
+    end
+
     set :program do
-      "#{node.body.map(&:to_source).join("\n")}\n"
+      "#{join("\n")}\n"
     end
 
     set :qsymbols_add do
-      node.body.map(&:to_source).join(type(0) == :qsymbols_new ? '' : ' ')
+      join(type(0) == :qsymbols_new ? '' : ' ')
     end
 
     set :qsymbols_new do
@@ -111,7 +164,7 @@ module Prepack
     end
 
     set :qwords_add do
-      node.body.map(&:to_source).join(type(0) == :qwords_new ? '' : ' ')
+      join(type(0) == :qwords_new ? '' : ' ')
     end
 
     set :qwords_new do
@@ -119,20 +172,15 @@ module Prepack
     end
 
     set :stmts_add do
-      if type(0) == :stmts_new
-        source(1)
-      else
-        node.body.map(&:to_source).join("\n")
-      end
+      type(0) == :stmts_new ? source(1) : join("\n")
     end
 
-    set :string_add do
-      node.body.map(&:to_source).join
+    set :string_add, :var_field, :vcall, :word_add do
+      join
     end
 
     set :string_content do
-      return '' if node.body.length.zero?
-      raise ArgumentError
+      ''
     end
 
     set :string_embexpr do
@@ -152,19 +200,15 @@ module Prepack
     end
 
     set :symbols_add do
-      node.body.map(&:to_source).join(type(0) == :symbols_new ? '' : ' ')
+      join(type(0) == :symbols_new ? '' : ' ')
     end
 
     set :symbols_new do
       "%I["
     end
 
-    set :vcall do
-      node.body.map(&:to_source).join
-    end
-
-    set :word_add do
-      node.body.map(&:to_source).join
+    set :var_ref do
+      source(0)
     end
 
     set :word_new do
@@ -172,7 +216,7 @@ module Prepack
     end
 
     set :words_add do
-      node.body.map(&:to_source).join(type(0) == :words_new ? '' : ' ')
+      join(type(0) == :words_new ? '' : ' ')
     end
 
     set :words_new do
