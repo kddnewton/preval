@@ -72,12 +72,16 @@ module Prepack
     set(:block_var) { "|#{source(0)}|" }
     set(:bodystmt) { body.compact.map(&:to_source).join("\n") }
     set(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
+    set(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
     set(:command) { join(' ') }
+    set(:const_path_field, :const_path_ref) { join('::') }
+    set(:const_ref) { source(0) }
+    set(:def) { "def #{source(0)}\n#{source(2)}\nend" }
     set(:defined) { "defined?(#{source(0)})" }
     set(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     set(:END) { "END {\n#{source(0)}\n}"}
     set(:field) { join }
-    set(:lit_gvar, :lit_kw, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
+    set(:lit_const, :lit_gvar, :lit_kw, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
     set(:massign) { join(' = ') }
     set(:method_add_block) { join }
     set(:mlhs_add) { starts?(:mlhs_new) ? source(1) : join(',') }
@@ -88,6 +92,7 @@ module Prepack
     set(:mrhs_add_star) { "*#{join}" }
     set(:mrhs_new) { '' }
     set(:mrhs_new_from_args) { source(0) }
+    set(:module) { "module #{source(0)}#{source(1)}\nend" }
     set(:opassign) { join(' ') }
     set(:paren) { "(#{join})" }
     set(:params) do
@@ -109,6 +114,7 @@ module Prepack
     set(:qsymbols_new) { '%i[' }
     set(:qwords_add) { join(starts?(:qwords_new) ? '' : ' ') }
     set(:qwords_new) { '%w[' }
+    set(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
     set(:stmts_add) { starts?(:stmts_new) ? source(1) : join("\n") }
     set(:string_add, :var_field, :vcall, :word_add) { join }
     set(:string_content) { '' }
@@ -119,9 +125,12 @@ module Prepack
     set(:symbol_literal) { source(0) }
     set(:symbols_add) { join(starts?(:symbols_new) ? '' : ' ') }
     set(:symbols_new) { '%I[' }
+    set(:top_const_field, :top_const_ref) { "::#{source(0)}" }
+    set(:undef) { "undef #{body[0][0].to_source}" }
     set(:until) { "until #{source(0)}\n#{source(1)}\nend" }
     set(:until_mod) { "#{source(1)} until #{source(0)}" }
     set(:var_ref) { source(0) }
+    set(:void_stmt) { '' }
     set(:while) { "while #{source(0)}\n#{source(1)}\nend" }
     set(:while_mod) { "#{source(1)} while #{source(0)}" }
     set(:word_new) { '' }
