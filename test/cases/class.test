@@ -51,7 +51,7 @@ class Object < BasicObject
 attr_accessor :config
 end
 class << self
-def method
+def method()
 
 end
 undef method

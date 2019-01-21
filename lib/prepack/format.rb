@@ -24,7 +24,9 @@ module Prepack
     to(:assign) { "#{source(0)} = #{source(1)}" }
     to(:array) { body[0].nil? ? '[]' : "#{starts_with?(:args_add) ? '[' : ''}#{source(0)}]" }
     to(:assoc_new) { starts_with?(:@label) ? join(' ') : join(' => ') }
+    to(:assoc_splat) { "**#{source(0)}" }
     to(:assoclist_from_args) { body[0].map(&:to_source).join(',') }
+    to(:bare_assoc_hash) { body[0].map(&:to_source).join(',') }
     to(:begin) { "begin\n#{join("\n")}\nend" }
     to(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
     to(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
@@ -37,7 +39,7 @@ module Prepack
     to(:const_path_field) { join('::') }
     to(:const_path_ref) { join('::') }
     to(:const_ref) { source(0) }
-    to(:def) { "def #{source(0)}\n#{source(2)}\nend" }
+    to(:def) { "def #{source(0)}#{body[1].is?(:paren) ? source(1) : "(#{source(1)})"}\n#{source(2)}\nend" }
     to(:defined) { "defined?(#{source(0)})" }
     to(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     to(:END) { "END {\n#{source(0)}\n}"}
@@ -72,7 +74,7 @@ module Prepack
       parts += opts.map { |opt| "#{opt[0]} = #{opt[1]}" } if opts
       parts << rest.to_source if rest
       parts << post.map(&:to_source).join if post
-      parts += kwargs.map { |(kwarg, value)| value ? "#{kwarg} #{value}" : kwarg } if kwargs
+      parts += kwargs.map { |(kwarg, value)| value ? "#{kwarg.to_source} #{value.to_source}" : kwarg.to_source } if kwargs
       parts << kwarg_rest.to_source if kwarg_rest
       parts << block.to_source if block
 
