@@ -23,6 +23,8 @@ module Prepack
     to(:args_new) { '' }
     to(:assign) { "#{source(0)} = #{source(1)}" }
     to(:array) { body[0].nil? ? '[]' : "#{starts_with?(:args_add) ? '[' : ''}#{source(0)}]" }
+    to(:assoc_new) { starts_with?(:@label) ? join(' ') : join(' => ') }
+    to(:assoclist_from_args) { body[0].map(&:to_source).join(',') }
     to(:begin) { "begin\n#{join("\n")}\nend" }
     to(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
     to(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
@@ -43,6 +45,7 @@ module Prepack
     to(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
     to(:fcall) { join }
     to(:field) { join }
+    to(:hash) { body[0].nil? ? '{}' : "{ #{join} }" }
     to(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     to(:if_mod) { "#{source(1)} if #{source(0)}" }
     to(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
