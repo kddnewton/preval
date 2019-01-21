@@ -9,7 +9,16 @@ class PrepackTest < Minitest::Test
   end
 
   def test_arithmetic
-    assert_equal '7', process('3 + 4').strip
+    assert_equal '7', inline('3 + 4')
+
+    assert_equal 'a', inline('a + 0')
+    assert_equal 'a', inline('0 + a')
+
+    assert_equal 'a', inline('a * 1')
+    assert_equal 'a', inline('1 * a')
+
+    assert_equal 'a', inline('a ** 1')
+    assert_equal '1', inline('1 ** a')
   end
 
   def test_loops
@@ -29,6 +38,10 @@ class PrepackTest < Minitest::Test
   end
 
   private
+
+  def inline(source)
+    process(source).chomp
+  end
 
   def process(source)
     Prepack.process(source)

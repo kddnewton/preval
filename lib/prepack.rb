@@ -23,7 +23,13 @@ module Prepack
       @literal = literal
     end
 
-    def replace(type, body)
+    def replace(node)
+      @type = node.type
+      @body = node.body
+      @literal = node.literal
+    end
+
+    def update(type, body)
       @type = type
       @body = body
       @literal = type.to_s.start_with?('@')
@@ -225,10 +231,29 @@ module Prepack
   class ArithmeticPass < Pass
     def on_binary(node)
       left, operation, right = node.body
-      return if left.type != :@int || !%i[+ - * / % **].include?(operation) || right.type != :@int
 
-      value = left.body[0].to_i.public_send(operation, right.body[0].to_i).to_s
-      node.replace(:@int, value)
+      if left.type == :@int && %i[+ - * / % **].include?(operation) && right.type == :@int
+        value = left.body[0].to_i.public_send(operation, right.body[0].to_i).to_s
+        node.update(:@int, value)
+      elsif %i[+ -].include?(operation)
+        if right.type == :@int && right.body[0] == '0'
+          node.replace(left)
+        elsif left.type == :@int && left.body[0] == '0'
+          node.replace(right)
+        end
+      elsif %i[* /].include?(operation)
+        if right.type == :@int && right.body[0] == '1'
+          node.replace(left)
+        elsif left.type == :@int && left.body[0] == '1'
+          node.replace(right)
+        end
+      elsif operation == :**
+        if right.type == :@int && right.body[0] == '1'
+          node.replace(left)
+        elsif left.type == :@int && left.body[0] == '1'
+          node.replace(left)
+        end
+      end
     end
   end
 end
@@ -240,7 +265,7 @@ module Prepack
       return if predicate.type != :var_ref || !predicate.starts_with?(:@kw) || predicate.body[0].body != 'true'
 
       parser = Parser.new("loop do\n#{statements.to_source}\nend")
-      node.replace(:stmts_add, parser.parse.body[0].body)
+      node.update(:stmts_add, parser.parse.body[0].body)
     end
   end
 end
