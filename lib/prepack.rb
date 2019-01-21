@@ -72,6 +72,7 @@ module Prepack
     set(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
     set(:block_var) { "|#{source(0)}|" }
     set(:bodystmt) { body.compact.map(&:to_source).join("\n") }
+    set(:brace_block) { " { #{body[0] ? source(0) : ''}#{source(1)} }" }
     set(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
     set(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
     set(:command) { join(' ') }
@@ -83,12 +84,14 @@ module Prepack
     set(:END) { "END {\n#{source(0)}\n}"}
     set(:else) { "else\n#{source(0)}" }
     set(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
+    set(:fcall) { join }
     set(:field) { join }
     set(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     set(:if_mod) { "#{source(1)} if #{source(0)}" }
     set(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
     set(:lit_const, :lit_gvar, :lit_kw, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
     set(:massign) { join(' = ') }
+    set(:method_add_arg) { body[1].type == :args_new ? source(0) : join }
     set(:method_add_block) { join }
     set(:mlhs_add) { starts?(:mlhs_new) ? source(1) : join(',') }
     set(:mlhs_add_post) { join(',') }
