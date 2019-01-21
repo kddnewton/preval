@@ -56,13 +56,11 @@ module Prepack
       end
     end
 
-    def self.set(*types, &block)
-      types.each do |type|
-        define_method(:"to_#{type}_source", &block)
-      end
+    def self.set(type, &block)
+      define_method(:"to_#{type}_source", &block)
     end
 
-    set(:alias, :var_alias) { "alias #{source(0)} #{source(1)}" }
+    set(:alias) { "alias #{source(0)} #{source(1)}" }
     set(:aref) { body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
     set(:aref_field) { "#{source(0)}[#{source(1)}]" }
     set(:arg_paren) { body[0].nil? ? '' : "(#{source(0)})" }
@@ -88,7 +86,8 @@ module Prepack
     set(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
     set(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
     set(:command) { join(' ') }
-    set(:const_path_field, :const_path_ref) { join('::') }
+    set(:const_path_field) { join('::') }
+    set(:const_path_ref) { join('::') }
     set(:const_ref) { source(0) }
     set(:def) { "def #{source(0)}\n#{source(2)}\nend" }
     set(:defined) { "defined?(#{source(0)})" }
@@ -137,7 +136,7 @@ module Prepack
     set(:qwords_new) { '%w[' }
     set(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
     set(:stmts_add) { starts_with?(:stmts_new) ? source(1) : join("\n") }
-    set(:string_add, :var_field, :vcall, :word_add) { join }
+    set(:string_add) { join }
     set(:string_content) { '' }
     set(:string_embexpr) { "\#{#{source(0)}}" }
     set(:string_literal) { "\"#{source(0)}\"" }
@@ -146,16 +145,21 @@ module Prepack
     set(:symbol_literal) { source(0) }
     set(:symbols_add) { join(starts_with?(:symbols_new) ? '' : ' ') }
     set(:symbols_new) { '%I[' }
-    set(:top_const_field, :top_const_ref) { "::#{source(0)}" }
+    set(:top_const_field) { "::#{source(0)}" }
+    set(:top_const_ref) { "::#{source(0)}" }
     set(:undef) { "undef #{body[0][0].to_source}" }
     set(:unless) { "unless #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     set(:unless_mod) { "#{source(1)} unless #{source(0)}" }
     set(:until) { "until #{source(0)}\n#{source(1)}\nend" }
     set(:until_mod) { "#{source(1)} until #{source(0)}" }
+    set(:var_alias) { "alias #{source(0)} #{source(1)}" }
+    set(:var_field) { join }
     set(:var_ref) { source(0) }
+    set(:vcall) { join }
     set(:void_stmt) { '' }
     set(:while) { "while #{source(0)}\n#{source(1)}\nend" }
     set(:while_mod) { "#{source(1)} while #{source(0)}" }
+    set(:word_add) { join }
     set(:word_new) { '' }
     set(:words_add) { join(starts_with?(:words_new) ? '' : ' ') }
     set(:words_new) { '%W[' }
@@ -203,9 +207,18 @@ module Prepack
 end
 
 module Prepack
+  SyntaxError = Class.new(SyntaxError)
+end
+
+module Prepack
   class Pass
     def process(source)
-      Parser.sexp(source).tap { |node| node.visit(self) }.to_source
+      sexp = Parser.sexp(source)
+      sexp.tap { |node| node.visit(self) }.to_source if sexp
+    end
+
+    def process!(source)
+      process(source).tap { |response| raise SyntaxError unless response }
     end
 
     def self.enable!

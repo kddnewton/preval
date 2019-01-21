@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>prepack</title>
+    <style>
+html, body, main {
+  font-family: "Courier New";
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+main {
+  display: flex;
+}
+
+textarea {
+  background-color: black;
+  box-sizing: border-box;
+  color: white;
+  resize: none;
+}
+
+textarea, code {
+  flex-basis: 50%;
+  font-size: 18px;
+  padding: .5em;
+}
+    </style>
+  </head>
+  <body>
+    <main>
+      <textarea placeholder="Enter Ruby code..."></textarea>
+      <code></code>
+    </main>
+    <script>
+const textarea = document.querySelector("textarea");
+const code = document.querySelector("code");
+
+const fetchCode = () => {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "/", true);
+
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      code.innerText = xhr.status === 200 ? xhr.responseText : "";
+    }
+  };
+
+  xhr.send(textarea.value);
+};
+
+let timeout = 0;
+
+textarea.addEventListener("input", () => {
+  clearTimeout(timeout);
+  timeout = setTimeout(fetchCode, 300);
+});
+    </script>
+  </body>
+</html>
