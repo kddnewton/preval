@@ -6,10 +6,7 @@ module Prepack
     attr_accessor :passes
 
     def process(source)
-      passes.each do |pass|
-        source = pass.process(source)
-      end
-      source
+      passes.inject(source) { |accum, pass| pass.process(accum) }
     end
   end
 
@@ -18,30 +15,45 @@ end
 
 module Prepack
   class Node
-    attr_reader :type, :body
+    attr_reader :type, :body, :literal
 
     def initialize(type, body)
       @type = type
       @body = body
-    end
-
-    def each_child
-      return if type.to_s.start_with?('lit_')
-
-      body.each do |child|
-        yield child if child.is_a?(Node)
-      end
+      @literal = type.to_s.start_with?('@')
     end
 
     def replace(type, body)
       @type = type
       @body = body
+      @literal = type.to_s.start_with?('@')
+    end
+
+    def starts?(type)
+      body[0].type == type
     end
 
     def to_source
-      public_send(:"to_#{type}_source")
-    rescue NoMethodError
-      raise NotImplementedError, "#{type} has not yet been implemented"
+      return body if literal
+
+      begin
+        public_send(:"to_#{type}_source")
+      rescue NoMethodError
+        raise NotImplementedError, "#{type} has not yet been implemented"
+      end
+    end
+
+    def visit(pass)
+      return if literal
+
+      handler = :"on_#{type}"
+      pass.public_send(handler, self) if pass.respond_to?(handler)
+
+      return unless body.is_a?(Array)
+
+      body.each do |child|
+        child.visit(pass) if child.is_a?(Node)
+      end
     end
 
     def self.set(*types, &block)
@@ -89,7 +101,6 @@ module Prepack
     set(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     set(:if_mod) { "#{source(1)} if #{source(0)}" }
     set(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
-    set(:lit_const, :lit_gvar, :lit_kw, :lit_ident, :lit_int, :lit_op, :lit_period, :lit_tstring_content) { body }
     set(:massign) { join(' = ') }
     set(:method_add_arg) { body[1].type == :args_new ? source(0) : join }
     set(:method_add_block) { join }
@@ -148,7 +159,7 @@ module Prepack
     set(:word_new) { '' }
     set(:words_add) { join(starts?(:words_new) ? '' : ' ') }
     set(:words_new) { '%W[' }
-    set(:yield) { "yield #{join}" }
+    set(:yield) { "yield#{starts?(:paren) ? '' : ' '}#{join}" }
     set(:yield0) { 'yield' }
     set(:zsuper) { 'super' }
 
@@ -156,10 +167,6 @@ module Prepack
 
     def join(delim = '')
       body.map(&:to_source).join(delim)
-    end
-
-    def starts?(type)
-      body[0].type == type
     end
 
     def source(index)
@@ -179,7 +186,7 @@ module Prepack
     SCANNER_EVENTS.each do |event|
       module_eval(<<-End, __FILE__, __LINE__ + 1)
         def on_#{event}(token)
-          Node.new(:lit_#{event}, token)
+          Node.new(:@#{event}, token)
         end
       End
     end
@@ -198,77 +205,37 @@ end
 module Prepack
   class Pass
     def process(source)
-      node = Prepack::Parser.sexp(source)
-      dispatch(node)
-      node.to_source
+      Parser.sexp(source).tap { |node| node.visit(self) }.to_source
     end
 
     def self.enable!
       Prepack.passes << new
-    end
-
-    private
-
-    def dispatch(node)
-      processor = :"on_#{node.type}"
-      public_send(processor, node) if respond_to?(processor)
-      node.each_child { |child| dispatch(child) }
-    end
-  end
-end
-
-module Prepack
-  class Matcher
-    module Matches
-      refine Object do
-        def matches?(value)
-          self == value
-        end
-      end
-
-      refine Node do
-        def matches?(value)
-          type == value
-        end
-      end
-    end
-
-    using Matches
-
-    attr_reader :pattern
-
-    def initialize(*pattern)
-      @pattern = pattern
-    end
-
-    def match?(node)
-      node.body.each.with_index.all? do |child, index|
-        if pattern[index].is_a?(Array)
-          pattern[index].any? { |candidate| child.matches?(candidate) }
-        else
-          child.matches?(pattern[index])
-        end
-      end
     end
   end
 end
 
 module Prepack
   class ArithmeticPass < Pass
-    attr_reader :literal_binary
-
-    def initialize
-      @literal_binary = Matcher.new(:lit_int, %i[+ - * / % **], :lit_int)
-    end
-
     def on_binary(node)
-      if literal_binary.match?(node)
-        left, op, right = node.body
-        value = left.body[0].to_i.public_send(op, right.body[0].to_i)
-        node.replace(:lit_int, value.to_s)
-      end
+      left, op, right = node.body
+      return if left.type != :@int || !%i[+ - * / % **].include?(op) || right.type != :@int
+
+      value = left.body[0].to_i.public_send(op, right.body[0].to_i).to_s
+      node.replace(:@int, value)
+    end
+  end
+end
+
+module Prepack
+  class LoopPass < Pass
+    def on_while(node)
+      predicate, statements = node.body
+      return if predicate.type != :var_ref || predicate.body[0].type != :@kw || predicate.body[0].body != 'true'
+
+      node.replace(:stmts_add, Parser.sexp("loop do\n#{statements.to_source}\nend").body[0].body)
     end
   end
 end
 
 Prepack::ArithmeticPass.enable!
+Prepack::LoopPass.enable!

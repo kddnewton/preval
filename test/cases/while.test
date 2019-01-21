@@ -1,20 +1,20 @@
-while true
+while a
   1
 end
 
-1 while true
+1 while a
 
-until true
+until a
   1
 end
 
-1 until true
+1 until a
 ---
-while true
+while a
 1
 end
-1 while true
-until true
+1 while a
+until a
 1
 end
-1 until true
+1 until a
