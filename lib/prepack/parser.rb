@@ -2,6 +2,10 @@
 
 module Prepack
   class Parser < Ripper::SexpBuilder
+    def self.parse(source)
+      new(source).parse
+    end
+
     private
 
     SCANNER_EVENTS.each do |event|

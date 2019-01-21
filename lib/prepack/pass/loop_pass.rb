@@ -17,8 +17,8 @@ module Prepack
         predicate, statements = node.body
         return unless predicate.true?
 
-        parser = Parser.new("loop do\n#{statements.to_source}\nend")
-        node.update(:stmts_add, parser.parse.body[0].body)
+        sexp = Parser.parse("loop do\n#{statements.to_source}\nend")
+        node.update(:stmts_add, sexp.body[0].body)
       end
     end
   end

@@ -3,7 +3,7 @@
 module Prepack
   class Pass
     def process(source)
-      sexp = Parser.new(source).parse
+      sexp = Parser.parse(source)
       sexp.tap { |node| node.visit(self) }.to_source if sexp
     end
 
