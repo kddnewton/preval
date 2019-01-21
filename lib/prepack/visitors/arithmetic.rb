@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Prepack
-  class Pass
-    class ArithmeticPass < Pass
+  class Visitors
+    class Arithmetic < Visitor
       module IntNode
         refine Node do
           def int?(value)

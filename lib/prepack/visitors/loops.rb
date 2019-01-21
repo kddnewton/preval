@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Prepack
-  class Pass
-    class LoopPass < Pass
+  class Visitors
+    class Loops < Visitor
       module TrueNode
         refine Node do
           def true?

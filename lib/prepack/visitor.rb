@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Prepack
-  class Pass
+  class Visitor
     def process(source)
       sexp = Parser.parse(source)
       sexp.tap { |node| node.visit(self) }.to_source if sexp
@@ -12,7 +12,7 @@ module Prepack
     end
 
     def self.enable!
-      Prepack.passes << new
+      Prepack.visitors << new
     end
   end
 end

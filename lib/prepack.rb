@@ -6,23 +6,23 @@ module Prepack
   SyntaxError = Class.new(SyntaxError)
 
   class << self
-    attr_reader :passes
+    attr_reader :visitors
 
     def process(source)
-      passes.inject(source) { |accum, pass| pass.process(accum) }
+      visitors.inject(source) { |accum, visitor| visitor.process(accum) }
     end
   end
 
-  @passes = []
+  @visitors = []
 end
 
 require 'prepack/format'
 require 'prepack/node'
 require 'prepack/parser'
-require 'prepack/pass'
-require 'prepack/pass/arithmetic_pass'
-require 'prepack/pass/loop_pass'
 require 'prepack/version'
+require 'prepack/visitor'
+require 'prepack/visitors/arithmetic'
+require 'prepack/visitors/loops'
 
-Prepack::Pass::ArithmeticPass.enable!
-Prepack::Pass::LoopPass.enable!
+Prepack::Visitors::Arithmetic.enable!
+Prepack::Visitors::Loops.enable!
