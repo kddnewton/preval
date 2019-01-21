@@ -93,6 +93,7 @@ module Prepack
     to(:symbols_new) { '%I[' }
     to(:top_const_field) { "::#{source(0)}" }
     to(:top_const_ref) { "::#{source(0)}" }
+    to(:unary) { "#{body[0][0]}#{source(1)}" }
     to(:undef) { "undef #{body[0][0].to_source}" }
     to(:unless) { "unless #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     to(:unless_mod) { "#{source(1)} unless #{source(0)}" }
