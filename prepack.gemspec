@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Kevin Deisz']
   spec.email         = ['kevin.deisz@gmail.com']
 
-  spec.summary       = 'Optimizes your Ruby code'
+  spec.summary       = 'Automatically optimizes your Ruby code'
   spec.homepage      = 'https://github.com/kddeisz/prepack'
   spec.license       = 'MIT'
 
