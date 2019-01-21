@@ -42,6 +42,8 @@ module Prepack
     to(:def) { "def #{source(0)}#{body[1].is?(:paren) ? source(1) : "(#{source(1)})"}\n#{source(2)}\nend" }
     to(:defined) { "defined?(#{source(0)})" }
     to(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
+    to(:dot2) { join('..') }
+    to(:dot3) { join('...') }
     to(:END) { "END {\n#{source(0)}\n}"}
     to(:else) { "else\n#{source(0)}" }
     to(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
@@ -85,6 +87,8 @@ module Prepack
     to(:qsymbols_new) { '%i[' }
     to(:qwords_add) { join(starts_with?(:qwords_new) ? '' : ' ') }
     to(:qwords_new) { '%w[' }
+    to(:return) { "return #{source(0)}" }
+    to(:return0) { 'return' }
     to(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
     to(:stmts_add) { starts_with?(:stmts_new) ? source(1) : join("\n") }
     to(:string_add) { join }
