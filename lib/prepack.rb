@@ -29,7 +29,7 @@ module Prepack
       @literal = type.to_s.start_with?('@')
     end
 
-    def starts?(type)
+    def starts_with?(type)
       body[0].type == type
     end
 
@@ -66,7 +66,7 @@ module Prepack
     set(:aref) { body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
     set(:aref_field) { "#{source(0)}[#{source(1)}]" }
     set(:arg_paren) { body[0].nil? ? '' : "(#{source(0)})" }
-    set(:args_add) { starts?(:args_new) ? source(1) : join(',') }
+    set(:args_add) { starts_with?(:args_new) ? source(1) : join(',') }
     set(:args_add_block) do
       args, block = body
 
@@ -75,10 +75,10 @@ module Prepack
 
       parts.join
     end
-    set(:args_add_star) { starts?(:args_new) ? "*#{source(1)}" : "#{source(0)},*#{source(1)}" }
+    set(:args_add_star) { starts_with?(:args_new) ? "*#{source(1)}" : "#{source(0)},*#{source(1)}" }
     set(:args_new) { '' }
     set(:assign) { "#{source(0)} = #{source(1)}" }
-    set(:array) { body[0].nil? ? '[]' : "#{starts?(:args_add) ? '[' : ''}#{source(0)}]" }
+    set(:array) { body[0].nil? ? '[]' : "#{starts_with?(:args_add) ? '[' : ''}#{source(0)}]" }
     set(:begin) { "begin\n#{join("\n")}\nend" }
     set(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
     set(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
@@ -104,16 +104,16 @@ module Prepack
     set(:massign) { join(' = ') }
     set(:method_add_arg) { body[1].type == :args_new ? source(0) : join }
     set(:method_add_block) { join }
-    set(:mlhs_add) { starts?(:mlhs_new) ? source(1) : join(',') }
+    set(:mlhs_add) { starts_with?(:mlhs_new) ? source(1) : join(',') }
     set(:mlhs_add_post) { join(',') }
-    set(:mlhs_add_star) { "#{starts?(:mlhs_new) ? '' : "#{source(0)},"}#{body[1] ? "*#{source(1)}" : '*'}" }
+    set(:mlhs_add_star) { "#{starts_with?(:mlhs_new) ? '' : "#{source(0)},"}#{body[1] ? "*#{source(1)}" : '*'}" }
     set(:mlhs_paren) { "(#{source(0)})" }
     set(:mrhs_add) { join(',') }
     set(:mrhs_add_star) { "*#{join}" }
     set(:mrhs_new) { '' }
     set(:mrhs_new_from_args) { source(0) }
     set(:module) { "module #{source(0)}#{source(1)}\nend" }
-    set(:next) { starts?(:args_new) ? 'next' : "next #{source(0)}" }
+    set(:next) { starts_with?(:args_new) ? 'next' : "next #{source(0)}" }
     set(:opassign) { join(' ') }
     set(:paren) { "(#{join})" }
     set(:params) do
@@ -131,20 +131,20 @@ module Prepack
       parts.join(',')
     end
     set(:program) { "#{join("\n")}\n" }
-    set(:qsymbols_add) { join(starts?(:qsymbols_new) ? '' : ' ') }
+    set(:qsymbols_add) { join(starts_with?(:qsymbols_new) ? '' : ' ') }
     set(:qsymbols_new) { '%i[' }
-    set(:qwords_add) { join(starts?(:qwords_new) ? '' : ' ') }
+    set(:qwords_add) { join(starts_with?(:qwords_new) ? '' : ' ') }
     set(:qwords_new) { '%w[' }
     set(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
-    set(:stmts_add) { starts?(:stmts_new) ? source(1) : join("\n") }
+    set(:stmts_add) { starts_with?(:stmts_new) ? source(1) : join("\n") }
     set(:string_add, :var_field, :vcall, :word_add) { join }
     set(:string_content) { '' }
     set(:string_embexpr) { "\#{#{source(0)}}" }
     set(:string_literal) { "\"#{source(0)}\"" }
-    set(:super) { "super#{starts?(:arg_paren) ? '' : ' '}#{source(0)}" }
+    set(:super) { "super#{starts_with?(:arg_paren) ? '' : ' '}#{source(0)}" }
     set(:symbol) { ":#{source(0)}" }
     set(:symbol_literal) { source(0) }
-    set(:symbols_add) { join(starts?(:symbols_new) ? '' : ' ') }
+    set(:symbols_add) { join(starts_with?(:symbols_new) ? '' : ' ') }
     set(:symbols_new) { '%I[' }
     set(:top_const_field, :top_const_ref) { "::#{source(0)}" }
     set(:undef) { "undef #{body[0][0].to_source}" }
@@ -157,9 +157,9 @@ module Prepack
     set(:while) { "while #{source(0)}\n#{source(1)}\nend" }
     set(:while_mod) { "#{source(1)} while #{source(0)}" }
     set(:word_new) { '' }
-    set(:words_add) { join(starts?(:words_new) ? '' : ' ') }
+    set(:words_add) { join(starts_with?(:words_new) ? '' : ' ') }
     set(:words_new) { '%W[' }
-    set(:yield) { "yield#{starts?(:paren) ? '' : ' '}#{join}" }
+    set(:yield) { "yield#{starts_with?(:paren) ? '' : ' '}#{join}" }
     set(:yield0) { 'yield' }
     set(:zsuper) { 'super' }
 
@@ -217,10 +217,10 @@ end
 module Prepack
   class ArithmeticPass < Pass
     def on_binary(node)
-      left, op, right = node.body
-      return if left.type != :@int || !%i[+ - * / % **].include?(op) || right.type != :@int
+      left, oper, right = node.body
+      return if left.type != :@int || !%i[+ - * / % **].include?(oper) || right.type != :@int
 
-      value = left.body[0].to_i.public_send(op, right.body[0].to_i).to_s
+      value = left.body[0].to_i.public_send(oper, right.body[0].to_i).to_s
       node.replace(:@int, value)
     end
   end
@@ -230,7 +230,7 @@ module Prepack
   class LoopPass < Pass
     def on_while(node)
       predicate, statements = node.body
-      return if predicate.type != :var_ref || predicate.body[0].type != :@kw || predicate.body[0].body != 'true'
+      return if predicate.type != :var_ref || !predicate.starts_with?(:@kw) || predicate.body[0].body != 'true'
 
       node.replace(:stmts_add, Parser.sexp("loop do\n#{statements.to_source}\nend").body[0].body)
     end
