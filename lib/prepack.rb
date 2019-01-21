@@ -17,10 +17,10 @@ module Prepack
   class Node
     attr_reader :type, :body, :literal
 
-    def initialize(type, body)
+    def initialize(type, body, literal = false)
       @type = type
       @body = body
-      @literal = type.to_s.start_with?('@')
+      @literal = literal
     end
 
     def replace(type, body)
@@ -186,7 +186,7 @@ module Prepack
     SCANNER_EVENTS.each do |event|
       module_eval(<<-End, __FILE__, __LINE__ + 1)
         def on_#{event}(token)
-          Node.new(:@#{event}, token)
+          Node.new(:@#{event}, token, true)
         end
       End
     end
