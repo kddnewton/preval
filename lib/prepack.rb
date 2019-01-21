@@ -16,6 +16,7 @@ module Prepack
   @passes = []
 end
 
+require 'prepack/format'
 require 'prepack/node'
 require 'prepack/parser'
 require 'prepack/pass'
