@@ -64,6 +64,7 @@ module Prepack
       parts.join
     end
     set(:args_add_star) { starts?(:args_new) ? "*#{source(1)}" : "#{source(0)},*#{source(1)}" }
+    set(:args_new) { '' }
     set(:assign) { "#{source(0)} = #{source(1)}" }
     set(:array) { body[0].nil? ? '[]' : "#{starts?(:args_add) ? '[' : ''}#{source(0)}]" }
     set(:begin) { "begin\n#{join("\n")}\nend" }
@@ -98,6 +99,7 @@ module Prepack
     set(:mrhs_new) { '' }
     set(:mrhs_new_from_args) { source(0) }
     set(:module) { "module #{source(0)}#{source(1)}\nend" }
+    set(:next) { starts?(:args_new) ? 'next' : "next #{source(0)}" }
     set(:opassign) { join(' ') }
     set(:paren) { "(#{join})" }
     set(:params) do
