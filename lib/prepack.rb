@@ -3,14 +3,14 @@ require 'prepack/version'
 
 module Prepack
   class << self
-    attr_accessor :passes
+    attr_reader :passes
 
     def process(source)
       passes.inject(source) { |accum, pass| pass.process(accum) }
     end
   end
 
-  self.passes = []
+  @passes = []
 end
 
 module Prepack
@@ -29,6 +29,14 @@ module Prepack
       @literal = type.to_s.start_with?('@')
     end
 
+    def join(delim = '')
+      body.map(&:to_source).join(delim)
+    end
+
+    def source(index)
+      body[index].to_source
+    end
+
     def starts_with?(type)
       body[0].type == type
     end
@@ -37,7 +45,7 @@ module Prepack
       return body if literal
 
       begin
-        public_send(:"to_#{type}_source")
+        public_send(:"to_#{type}")
       rescue NoMethodError
         raise NotImplementedError, "#{type} has not yet been implemented"
       end
@@ -56,16 +64,16 @@ module Prepack
       end
     end
 
-    def self.set(type, &block)
-      define_method(:"to_#{type}_source", &block)
+    def self.to(type, &block)
+      define_method(:"to_#{type}", &block)
     end
 
-    set(:alias) { "alias #{source(0)} #{source(1)}" }
-    set(:aref) { body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
-    set(:aref_field) { "#{source(0)}[#{source(1)}]" }
-    set(:arg_paren) { body[0].nil? ? '' : "(#{source(0)})" }
-    set(:args_add) { starts_with?(:args_new) ? source(1) : join(',') }
-    set(:args_add_block) do
+    to(:alias) { "alias #{source(0)} #{source(1)}" }
+    to(:aref) { body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
+    to(:aref_field) { "#{source(0)}[#{source(1)}]" }
+    to(:arg_paren) { body[0].nil? ? '' : "(#{source(0)})" }
+    to(:args_add) { starts_with?(:args_new) ? source(1) : join(',') }
+    to(:args_add_block) do
       args, block = body
 
       parts = args.type == :args_new ? [] : [args.to_source]
@@ -73,49 +81,49 @@ module Prepack
 
       parts.join
     end
-    set(:args_add_star) { starts_with?(:args_new) ? "*#{source(1)}" : "#{source(0)},*#{source(1)}" }
-    set(:args_new) { '' }
-    set(:assign) { "#{source(0)} = #{source(1)}" }
-    set(:array) { body[0].nil? ? '[]' : "#{starts_with?(:args_add) ? '[' : ''}#{source(0)}]" }
-    set(:begin) { "begin\n#{join("\n")}\nend" }
-    set(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
-    set(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
-    set(:block_var) { "|#{source(0)}|" }
-    set(:bodystmt) { body.compact.map(&:to_source).join("\n") }
-    set(:brace_block) { " { #{body[0] ? source(0) : ''}#{source(1)} }" }
-    set(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
-    set(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
-    set(:command) { join(' ') }
-    set(:const_path_field) { join('::') }
-    set(:const_path_ref) { join('::') }
-    set(:const_ref) { source(0) }
-    set(:def) { "def #{source(0)}\n#{source(2)}\nend" }
-    set(:defined) { "defined?(#{source(0)})" }
-    set(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
-    set(:END) { "END {\n#{source(0)}\n}"}
-    set(:else) { "else\n#{source(0)}" }
-    set(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
-    set(:fcall) { join }
-    set(:field) { join }
-    set(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
-    set(:if_mod) { "#{source(1)} if #{source(0)}" }
-    set(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
-    set(:massign) { join(' = ') }
-    set(:method_add_arg) { body[1].type == :args_new ? source(0) : join }
-    set(:method_add_block) { join }
-    set(:mlhs_add) { starts_with?(:mlhs_new) ? source(1) : join(',') }
-    set(:mlhs_add_post) { join(',') }
-    set(:mlhs_add_star) { "#{starts_with?(:mlhs_new) ? '' : "#{source(0)},"}#{body[1] ? "*#{source(1)}" : '*'}" }
-    set(:mlhs_paren) { "(#{source(0)})" }
-    set(:mrhs_add) { join(',') }
-    set(:mrhs_add_star) { "*#{join}" }
-    set(:mrhs_new) { '' }
-    set(:mrhs_new_from_args) { source(0) }
-    set(:module) { "module #{source(0)}#{source(1)}\nend" }
-    set(:next) { starts_with?(:args_new) ? 'next' : "next #{source(0)}" }
-    set(:opassign) { join(' ') }
-    set(:paren) { "(#{join})" }
-    set(:params) do
+    to(:args_add_star) { starts_with?(:args_new) ? "*#{source(1)}" : "#{source(0)},*#{source(1)}" }
+    to(:args_new) { '' }
+    to(:assign) { "#{source(0)} = #{source(1)}" }
+    to(:array) { body[0].nil? ? '[]' : "#{starts_with?(:args_add) ? '[' : ''}#{source(0)}]" }
+    to(:begin) { "begin\n#{join("\n")}\nend" }
+    to(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
+    to(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
+    to(:block_var) { "|#{source(0)}|" }
+    to(:bodystmt) { body.compact.map(&:to_source).join("\n") }
+    to(:brace_block) { " { #{body[0] ? source(0) : ''}#{source(1)} }" }
+    to(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
+    to(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
+    to(:command) { join(' ') }
+    to(:const_path_field) { join('::') }
+    to(:const_path_ref) { join('::') }
+    to(:const_ref) { source(0) }
+    to(:def) { "def #{source(0)}\n#{source(2)}\nend" }
+    to(:defined) { "defined?(#{source(0)})" }
+    to(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
+    to(:END) { "END {\n#{source(0)}\n}"}
+    to(:else) { "else\n#{source(0)}" }
+    to(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
+    to(:fcall) { join }
+    to(:field) { join }
+    to(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
+    to(:if_mod) { "#{source(1)} if #{source(0)}" }
+    to(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
+    to(:massign) { join(' = ') }
+    to(:method_add_arg) { body[1].type == :args_new ? source(0) : join }
+    to(:method_add_block) { join }
+    to(:mlhs_add) { starts_with?(:mlhs_new) ? source(1) : join(',') }
+    to(:mlhs_add_post) { join(',') }
+    to(:mlhs_add_star) { "#{starts_with?(:mlhs_new) ? '' : "#{source(0)},"}#{body[1] ? "*#{source(1)}" : '*'}" }
+    to(:mlhs_paren) { "(#{source(0)})" }
+    to(:mrhs_add) { join(',') }
+    to(:mrhs_add_star) { "*#{join}" }
+    to(:mrhs_new) { '' }
+    to(:mrhs_new_from_args) { source(0) }
+    to(:module) { "module #{source(0)}#{source(1)}\nend" }
+    to(:next) { starts_with?(:args_new) ? 'next' : "next #{source(0)}" }
+    to(:opassign) { join(' ') }
+    to(:paren) { "(#{join})" }
+    to(:params) do
       reqs, opts, rest, post, kwargs, kwarg_rest, block = body
       parts = []
 
@@ -129,62 +137,48 @@ module Prepack
 
       parts.join(',')
     end
-    set(:program) { "#{join("\n")}\n" }
-    set(:qsymbols_add) { join(starts_with?(:qsymbols_new) ? '' : ' ') }
-    set(:qsymbols_new) { '%i[' }
-    set(:qwords_add) { join(starts_with?(:qwords_new) ? '' : ' ') }
-    set(:qwords_new) { '%w[' }
-    set(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
-    set(:stmts_add) { starts_with?(:stmts_new) ? source(1) : join("\n") }
-    set(:string_add) { join }
-    set(:string_content) { '' }
-    set(:string_embexpr) { "\#{#{source(0)}}" }
-    set(:string_literal) { "\"#{source(0)}\"" }
-    set(:super) { "super#{starts_with?(:arg_paren) ? '' : ' '}#{source(0)}" }
-    set(:symbol) { ":#{source(0)}" }
-    set(:symbol_literal) { source(0) }
-    set(:symbols_add) { join(starts_with?(:symbols_new) ? '' : ' ') }
-    set(:symbols_new) { '%I[' }
-    set(:top_const_field) { "::#{source(0)}" }
-    set(:top_const_ref) { "::#{source(0)}" }
-    set(:undef) { "undef #{body[0][0].to_source}" }
-    set(:unless) { "unless #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
-    set(:unless_mod) { "#{source(1)} unless #{source(0)}" }
-    set(:until) { "until #{source(0)}\n#{source(1)}\nend" }
-    set(:until_mod) { "#{source(1)} until #{source(0)}" }
-    set(:var_alias) { "alias #{source(0)} #{source(1)}" }
-    set(:var_field) { join }
-    set(:var_ref) { source(0) }
-    set(:vcall) { join }
-    set(:void_stmt) { '' }
-    set(:while) { "while #{source(0)}\n#{source(1)}\nend" }
-    set(:while_mod) { "#{source(1)} while #{source(0)}" }
-    set(:word_add) { join }
-    set(:word_new) { '' }
-    set(:words_add) { join(starts_with?(:words_new) ? '' : ' ') }
-    set(:words_new) { '%W[' }
-    set(:yield) { "yield#{starts_with?(:paren) ? '' : ' '}#{join}" }
-    set(:yield0) { 'yield' }
-    set(:zsuper) { 'super' }
-
-    private
-
-    def join(delim = '')
-      body.map(&:to_source).join(delim)
-    end
-
-    def source(index)
-      body[index].to_source
-    end
+    to(:program) { "#{join("\n")}\n" }
+    to(:qsymbols_add) { join(starts_with?(:qsymbols_new) ? '' : ' ') }
+    to(:qsymbols_new) { '%i[' }
+    to(:qwords_add) { join(starts_with?(:qwords_new) ? '' : ' ') }
+    to(:qwords_new) { '%w[' }
+    to(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
+    to(:stmts_add) { starts_with?(:stmts_new) ? source(1) : join("\n") }
+    to(:string_add) { join }
+    to(:string_content) { '' }
+    to(:string_embexpr) { "\#{#{source(0)}}" }
+    to(:string_literal) { "\"#{source(0)}\"" }
+    to(:super) { "super#{starts_with?(:arg_paren) ? '' : ' '}#{source(0)}" }
+    to(:symbol) { ":#{source(0)}" }
+    to(:symbol_literal) { source(0) }
+    to(:symbols_add) { join(starts_with?(:symbols_new) ? '' : ' ') }
+    to(:symbols_new) { '%I[' }
+    to(:top_const_field) { "::#{source(0)}" }
+    to(:top_const_ref) { "::#{source(0)}" }
+    to(:undef) { "undef #{body[0][0].to_source}" }
+    to(:unless) { "unless #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
+    to(:unless_mod) { "#{source(1)} unless #{source(0)}" }
+    to(:until) { "until #{source(0)}\n#{source(1)}\nend" }
+    to(:until_mod) { "#{source(1)} until #{source(0)}" }
+    to(:var_alias) { "alias #{source(0)} #{source(1)}" }
+    to(:var_field) { join }
+    to(:var_ref) { source(0) }
+    to(:vcall) { join }
+    to(:void_stmt) { '' }
+    to(:while) { "while #{source(0)}\n#{source(1)}\nend" }
+    to(:while_mod) { "#{source(1)} while #{source(0)}" }
+    to(:word_add) { join }
+    to(:word_new) { '' }
+    to(:words_add) { join(starts_with?(:words_new) ? '' : ' ') }
+    to(:words_new) { '%W[' }
+    to(:yield) { "yield#{starts_with?(:paren) ? '' : ' '}#{join}" }
+    to(:yield0) { 'yield' }
+    to(:zsuper) { 'super' }
   end
 end
 
 module Prepack
   class Parser < Ripper::SexpBuilder
-    def self.sexp(src, filename = '-', lineno = 1)
-      new(src, filename, lineno).parse
-    end
-
     private
 
     SCANNER_EVENTS.each do |event|
@@ -213,7 +207,7 @@ end
 module Prepack
   class Pass
     def process(source)
-      sexp = Parser.sexp(source)
+      sexp = Parser.new(source).parse
       sexp.tap { |node| node.visit(self) }.to_source if sexp
     end
 
@@ -230,10 +224,10 @@ end
 module Prepack
   class ArithmeticPass < Pass
     def on_binary(node)
-      left, oper, right = node.body
-      return if left.type != :@int || !%i[+ - * / % **].include?(oper) || right.type != :@int
+      left, operation, right = node.body
+      return if left.type != :@int || !%i[+ - * / % **].include?(operation) || right.type != :@int
 
-      value = left.body[0].to_i.public_send(oper, right.body[0].to_i).to_s
+      value = left.body[0].to_i.public_send(operation, right.body[0].to_i).to_s
       node.replace(:@int, value)
     end
   end
@@ -245,7 +239,8 @@ module Prepack
       predicate, statements = node.body
       return if predicate.type != :var_ref || !predicate.starts_with?(:@kw) || predicate.body[0].body != 'true'
 
-      node.replace(:stmts_add, Parser.sexp("loop do\n#{statements.to_source}\nend").body[0].body)
+      parser = Parser.new("loop do\n#{statements.to_source}\nend")
+      node.replace(:stmts_add, parser.parse.body[0].body)
     end
   end
 end
