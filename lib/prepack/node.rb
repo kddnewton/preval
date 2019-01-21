@@ -26,12 +26,16 @@ module Prepack
       body.map(&:to_source).join(delim)
     end
 
+    def is?(other)
+      type == other
+    end
+
     def source(index)
       body[index].to_source
     end
 
     def starts_with?(type)
-      body[0].type == type
+      body[0].is?(type)
     end
 
     def to_source
@@ -69,7 +73,7 @@ module Prepack
     to(:args_add_block) do
       args, block = body
 
-      parts = args.type == :args_new ? [] : [args.to_source]
+      parts = args.is?(:args_new) ? [] : [args.to_source]
       parts << parts.any? ? ',' : "&#{block.to_source}" if block
 
       parts.join
@@ -102,7 +106,7 @@ module Prepack
     to(:if_mod) { "#{source(1)} if #{source(0)}" }
     to(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
     to(:massign) { join(' = ') }
-    to(:method_add_arg) { body[1].type == :args_new ? source(0) : join }
+    to(:method_add_arg) { body[1].is?(:args_new) ? source(0) : join }
     to(:method_add_block) { join }
     to(:mlhs_add) { starts_with?(:mlhs_new) ? source(1) : join(',') }
     to(:mlhs_add_post) { join(',') }
