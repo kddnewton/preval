@@ -3,5 +3,8 @@
 require 'bundler/setup'
 require 'prepack'
 
+Prepack::Visitors::Arithmetic.enable!
+Prepack::Visitors::Loops.enable!
+
 require 'irb'
 IRB.start(__FILE__)

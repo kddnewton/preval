@@ -23,6 +23,3 @@ require 'prepack/version'
 require 'prepack/visitor'
 require 'prepack/visitors/arithmetic'
 require 'prepack/visitors/loops'
-
-Prepack::Visitors::Arithmetic.enable!
-Prepack::Visitors::Loops.enable!
