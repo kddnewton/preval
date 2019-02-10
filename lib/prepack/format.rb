@@ -36,6 +36,7 @@ module Prepack
     to(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
     to(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
     to(:command) { join(' ') }
+    to(:command_call) { "#{source(0)}.#{source(2)} #{source(3)}" }
     to(:const_path_field) { join('::') }
     to(:const_path_ref) { join('::') }
     to(:const_ref) { source(0) }
@@ -49,6 +50,7 @@ module Prepack
     to(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
     to(:fcall) { join }
     to(:field) { join }
+    to(:for) { "#{source(1)}.each do |#{source(0)}|\n#{source(2)}\nend" }
     to(:hash) { body[0].nil? ? '{}' : "{ #{join} }" }
     to(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     to(:if_mod) { "#{source(1)} if #{source(0)}" }
@@ -72,10 +74,10 @@ module Prepack
       reqs, opts, rest, post, kwargs, kwarg_rest, block = body
       parts = []
 
-      parts << reqs.map(&:to_source).join if reqs
+      parts += reqs.map(&:to_source) if reqs
       parts += opts.map { |opt| "#{opt[0]} = #{opt[1]}" } if opts
       parts << rest.to_source if rest
-      parts << post.map(&:to_source).join if post
+      parts += post.map(&:to_source) if post
       parts += kwargs.map { |(kwarg, value)| value ? "#{kwarg.to_source} #{value.to_source}" : kwarg.to_source } if kwargs
       parts << kwarg_rest.to_source if kwarg_rest
       parts << block.to_source if block
@@ -87,6 +89,7 @@ module Prepack
     to(:qsymbols_new) { '%i[' }
     to(:qwords_add) { join(starts_with?(:qwords_new) ? '' : ' ') }
     to(:qwords_new) { '%w[' }
+    to(:rest_param) { body[0] ? "*#{source(0)}" : '*' }
     to(:return) { "return #{source(0)}" }
     to(:return0) { 'return' }
     to(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
