@@ -33,6 +33,7 @@ module Prepack
     to(:block_var) { "|#{source(0)}|" }
     to(:bodystmt) { body.compact.map(&:to_source).join("\n") }
     to(:brace_block) { " { #{body[0] ? source(0) : ''}#{source(1)} }" }
+    to(:break) { body[0].type == :args_new ? 'break' : "break #{source(0)}" }
     to(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
     to(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
     to(:command) { join(' ') }
