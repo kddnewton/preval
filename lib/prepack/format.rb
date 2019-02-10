@@ -77,6 +77,7 @@ module Prepack
     to(:massign) { join(' = ') }
     to(:method_add_arg) { body[1].is?(:args_new) ? source(0) : join }
     to(:method_add_block) { join }
+    to(:methref) { join('.:') }
     to(:mlhs_add) { starts_with?(:mlhs_new) ? source(1) : join(',') }
     to(:mlhs_add_post) { join(',') }
     to(:mlhs_add_star) { "#{starts_with?(:mlhs_new) ? '' : "#{source(0)},"}#{body[1] ? "*#{source(1)}" : '*'}" }
