@@ -2,6 +2,8 @@ require 'test_helper'
 
 class PrepackTest < Minitest::Test
   Dir[File.join(__dir__, 'cases', '*.test')].each do |filepath|
+    next if %w[method rescue].include?(File.basename(filepath, '.test'))
+
     define_method(:"test_#{File.basename(filepath, '.test')}") do
       input, output = File.read(filepath).split("---\n")
       assert_equal output, process(input)

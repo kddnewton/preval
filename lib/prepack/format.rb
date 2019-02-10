@@ -47,6 +47,7 @@ module Prepack
     to(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     to(:dot2) { join('..') }
     to(:dot3) { join('...') }
+    to(:dyna_symbol) { ":\"#{source(0)}\"" }
     to(:END) { "END {\n#{source(0)}\n}"}
     to(:else) { "else\n#{source(0)}" }
     to(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
@@ -100,11 +101,19 @@ module Prepack
     to(:return0) { 'return' }
     to(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
     to(:stmts_add) { starts_with?(:stmts_new) ? source(1) : join("\n") }
-    to(:string_add) { join }
-    to(:string_content) { '' }
+    to(:string_add) { source(0) << source(1) }
+    to(:string_concat) { join(" \\\n") }
+    to(:string_content) { [] }
     to(:string_dvar) { "\#{#{source(0)}}" }
     to(:string_embexpr) { "\#{#{source(0)}}" }
-    to(:string_literal) { "\"#{source(0)}\"" }
+    to(:string_literal) do
+      content =
+        source(0).map! do |part|
+          part.start_with?('#{') ? part : part.gsub(/([^\\])"/) { "#{$1}\\\"" }
+        end
+
+      "\"#{content.join}\""
+    end
     to(:super) { "super#{starts_with?(:arg_paren) ? '' : ' '}#{source(0)}" }
     to(:symbol) { ":#{source(0)}" }
     to(:symbol_literal) { source(0) }
@@ -130,6 +139,9 @@ module Prepack
     to(:word_new) { '' }
     to(:words_add) { join(starts_with?(:words_new) ? '' : ' ') }
     to(:words_new) { '%W[' }
+    to(:xstring_add) { join }
+    to(:xstring_new) { '' }
+    to(:xstring_literal) { "%x[#{source(0)}]" }
     to(:yield) { "yield#{starts_with?(:paren) ? '' : ' '}#{join}" }
     to(:yield0) { 'yield' }
     to(:zsuper) { 'super' }

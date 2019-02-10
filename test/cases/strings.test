@@ -1,0 +1,135 @@
+''
+
+'abc'
+
+"abc's"
+
+"abc"
+
+"#{abc} abc"
+
+"abc #{de} fghi #{jkl} mno"
+
+'abc' \
+  'def' \
+  'ghi'
+
+"abc #{"abc #{abc} abc"} abc"
+
+{ 'a' => 1 }
+
+{ "a #{a}" => 1 }
+
+:"abc#{abc}abc"
+
+%x[abc]
+
+<<-HERE
+This is a straight heredoc!
+HERE
+
+<<-HERE
+This is another straight heredoc, this time with interpolation!
+#{interpolation}
+So interpolated right now.
+HERE
+
+abc = <<-HERE
+This is a straight heredoc on an assign!
+HERE
+
+<<-PARENT
+This is a straight heredoc!
+#{
+<<-CHILD
+Why do I do this
+CHILD
+}
+PARENT
+
+<<~HERE
+  This is a squiggly heredoc!
+HERE
+
+<<~HERE
+    This is another squiggly heredoc, this time with interpolation!
+    #{interpolation}
+    So interpolated right now.
+HERE
+
+abc = <<~HERE
+  This is a squiggly heredoc on an assign!
+HERE
+
+<<~PARENT
+  This is a squiggly heredoc!
+  #{
+    <<~CHILD
+      Why do I do this
+    CHILD
+  }
+PARENT
+
+<<-GRAND
+#{'interpolated'}
+<<~PARENT
+  #{'more interpolated'}
+    <<-CHILD
+      #{'what is going on'}
+    CHILD
+  #{'more interpolated'}
+PARENT
+#{'interpolated'}
+GRAND
+
+'abc "abc" abc'
+---
+""
+"abc"
+"abc's"
+"abc"
+"#{abc} abc"
+"abc #{de} fghi #{jkl} mno"
+"abc" \
+"def" \
+"ghi"
+"abc #{"abc #{abc} abc"} abc"
+{ "a" => 1 }
+{ "a #{a}" => 1 }
+:"abc#{abc}abc"
+%x[abc]
+"This is a straight heredoc!
+"
+"This is another straight heredoc, this time with interpolation!
+#{interpolation}
+So interpolated right now.
+"
+abc = "This is a straight heredoc on an assign!
+"
+"This is a straight heredoc!
+#{"Why do I do this
+"}
+"
+"  This is a squiggly heredoc!
+"
+"    This is another squiggly heredoc, this time with interpolation!
+    #{interpolation}
+    So interpolated right now.
+"
+abc = "  This is a squiggly heredoc on an assign!
+"
+"  This is a squiggly heredoc!
+  #{"      Why do I do this
+"}
+"
+"#{"interpolated"}
+<<~PARENT
+  #{"more interpolated"}
+    <<-CHILD
+      #{"what is going on"}
+    CHILD
+  #{"more interpolated"}
+PARENT
+#{"interpolated"}
+"
+"abc \"abc\" abc"
