@@ -92,6 +92,9 @@ module Prepack
     to(:qsymbols_new) { '%i[' }
     to(:qwords_add) { join(starts_with?(:qwords_new) ? '' : ' ') }
     to(:qwords_new) { '%w[' }
+    to(:regexp_add) { join }
+    to(:regexp_new) { '' }
+    to(:regexp_literal) { "%r{#{source(0)}}#{source(1).slice(1)}" }
     to(:rest_param) { body[0] ? "*#{source(0)}" : '*' }
     to(:return) { "return #{source(0)}" }
     to(:return0) { 'return' }
@@ -99,6 +102,7 @@ module Prepack
     to(:stmts_add) { starts_with?(:stmts_new) ? source(1) : join("\n") }
     to(:string_add) { join }
     to(:string_content) { '' }
+    to(:string_dvar) { "\#{#{source(0)}}" }
     to(:string_embexpr) { "\#{#{source(0)}}" }
     to(:string_literal) { "\"#{source(0)}\"" }
     to(:super) { "super#{starts_with?(:arg_paren) ? '' : ' '}#{source(0)}" }
