@@ -83,7 +83,7 @@ loop { |i,j|i.to_s }
 [1,2,3].each do |i|
 p i
 end
-def change()
+def change 
 change_table :foo do
 column :bar
 end
