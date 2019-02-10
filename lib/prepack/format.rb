@@ -35,6 +35,7 @@ module Prepack
     to(:brace_block) { " { #{body[0] ? source(0) : ''}#{source(1)} }" }
     to(:break) { body[0].type == :args_new ? 'break' : "break #{source(0)}" }
     to(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
+    to(:case) { "case#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     to(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
     to(:command) { join(' ') }
     to(:command_call) { "#{source(0)}.#{source(2)} #{source(3)}" }
@@ -117,6 +118,7 @@ module Prepack
     to(:var_ref) { source(0) }
     to(:vcall) { join }
     to(:void_stmt) { '' }
+    to(:when) { "when #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
     to(:while) { "while #{source(0)}\n#{source(1)}\nend" }
     to(:while_mod) { "#{source(1)} while #{source(0)}" }
     to(:word_add) { join }
