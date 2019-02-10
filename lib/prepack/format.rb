@@ -31,7 +31,18 @@ module Prepack
     to(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
     to(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
     to(:block_var) { "|#{source(0)}|" }
-    to(:bodystmt) { body.compact.map(&:to_source).join("\n") }
+    to(:bodystmt) do
+      source(0).tap do |code|
+        code << "\n#{source(1)}" if body[1]
+
+        if body[2]
+          stmts = body[2].is?(:else) ? body[2].body[0] : body[2]
+          code << "\nelse\n#{stmts.to_source}"
+        end
+
+        code << "\n#{source(3)}" if body[3]
+      end
+    end
     to(:brace_block) { " { #{body[0] ? source(0) : ''}#{source(1)} }" }
     to(:break) { body[0].is?(:args_new) ? 'break' : "break #{source(0)}" }
     to(:call) { "#{source(0)}#{source(1)}#{body[2] === :call ? '' : source(2)}" }
@@ -51,6 +62,7 @@ module Prepack
     to(:END) { "END {\n#{source(0)}\n}"}
     to(:else) { "else\n#{source(0)}" }
     to(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
+    to(:ensure) { "ensure\n#{source(0)}" }
     to(:fcall) { join }
     to(:field) { join }
     to(:for) { "#{source(1)}.each do |#{source(0)}|\n#{source(2)}\nend" }
@@ -93,10 +105,24 @@ module Prepack
     to(:qsymbols_new) { '%i[' }
     to(:qwords_add) { join(starts_with?(:qwords_new) ? '' : ' ') }
     to(:qwords_new) { '%w[' }
+    to(:redo) { 'redo' }
     to(:regexp_add) { join }
     to(:regexp_new) { '' }
     to(:regexp_literal) { "%r{#{source(0)}}#{source(1).slice(1)}" }
+    to(:rescue) do
+      'rescue'.dup.tap do |code|
+        if body[0] || body[1]
+          code << (body[0].is_a?(Array) ? " #{body[0][0].to_source}" : " #{source(0)}") if body[0]
+          code << " => #{source(1)}" if body[1]
+        end
+
+        code << "\n#{source(2)}"
+        code << "\n#{source(3)}" if body[3]
+      end
+    end
+    to(:rescue_mod) { join(' rescue ') }
     to(:rest_param) { body[0] ? "*#{source(0)}" : '*' }
+    to(:retry) { 'retry' }
     to(:return) { "return #{source(0)}" }
     to(:return0) { 'return' }
     to(:sclass) { "class << #{source(0)}\n#{source(1)}\nend" }
