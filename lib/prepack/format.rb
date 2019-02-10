@@ -33,8 +33,8 @@ module Prepack
     to(:block_var) { "|#{source(0)}|" }
     to(:bodystmt) { body.compact.map(&:to_source).join("\n") }
     to(:brace_block) { " { #{body[0] ? source(0) : ''}#{source(1)} }" }
-    to(:break) { body[0].type == :args_new ? 'break' : "break #{source(0)}" }
-    to(:call) { "#{source(0)}#{source(1)}#{body[2] === 'call' ? '' : source(2)}" }
+    to(:break) { body[0].is?(:args_new) ? 'break' : "break #{source(0)}" }
+    to(:call) { "#{source(0)}#{source(1)}#{body[2] === :call ? '' : source(2)}" }
     to(:case) { "case#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     to(:class) { "class #{source(0)}#{body[1] ? " < #{source(1)}\n" : ''}#{source(2)}\nend" }
     to(:command) { join(' ') }
@@ -57,6 +57,7 @@ module Prepack
     to(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     to(:if_mod) { "#{source(1)} if #{source(0)}" }
     to(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
+    to(:lambda) { "->(#{starts_with?(:paren) ? body[0].body[0].to_source : source(0)}) { #{source(1)} }" }
     to(:massign) { join(' = ') }
     to(:method_add_arg) { body[1].is?(:args_new) ? source(0) : join }
     to(:method_add_block) { join }
