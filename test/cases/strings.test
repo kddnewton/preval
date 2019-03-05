@@ -83,6 +83,10 @@ PARENT
 GRAND
 
 'abc "abc" abc'
+?a
+?\C-a
+?\M-a
+?\M-\C-a
 ---
 ""
 "abc"
@@ -133,3 +137,7 @@ PARENT
 #{"interpolated"}
 "
 "abc \"abc\" abc"
+?a
+?\C-a
+?\M-a
+?\M-\C-a
