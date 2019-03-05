@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
-require 'prepack'
+require 'preval'
 
-Prepack::Visitors::Arithmetic.enable!
-Prepack::Visitors::Loops.enable!
+Preval::Visitors::Arithmetic.enable!
+Preval::Visitors::Loops.enable!
 
 require 'minitest/autorun'

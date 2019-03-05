@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Prepack
+module Preval
   class Visitors
     class Arithmetic < Visitor
       module IntNode

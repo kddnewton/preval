@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'prepack'
+require 'preval'
 require 'sinatra'
 
 get '/' do
@@ -9,7 +9,7 @@ get '/' do
 end
 
 post '/' do
-  Prepack.process(request.body.read).tap do |response|
+  Preval.process(request.body.read).tap do |response|
     halt 422 unless response
   end
 end

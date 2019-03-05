@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Prepack
+module Preval
   class Visitor
     def process(source)
       sexp = Parser.parse(source)
@@ -12,7 +12,7 @@ module Prepack
     end
 
     def self.enable!
-      Prepack.visitors << new
+      Preval.visitors << new
     end
   end
 end

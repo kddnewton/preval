@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    prepack (0.1.0)
+    preval (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -25,7 +25,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 2.0)
   minitest (~> 5.11)
-  prepack!
+  preval!
   rake (~> 12.3)
   sinatra
 

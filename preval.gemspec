@@ -1,15 +1,15 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'prepack/version'
+require 'preval/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'prepack'
-  spec.version       = Prepack::VERSION
+  spec.name          = 'preval'
+  spec.version       = Preval::VERSION
   spec.authors       = ['Kevin Deisz']
   spec.email         = ['kevin.deisz@gmail.com']
 
   spec.summary       = 'Automatically optimizes your Ruby code'
-  spec.homepage      = 'https://github.com/kddeisz/prepack'
+  spec.homepage      = 'https://github.com/kddeisz/preval'
   spec.license       = 'MIT'
 
   spec.files         = Dir.chdir(__dir__) do

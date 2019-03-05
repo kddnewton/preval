@@ -2,7 +2,7 @@
 
 require 'ripper'
 
-module Prepack
+module Preval
   SyntaxError = Class.new(SyntaxError)
 
   class << self
@@ -16,10 +16,10 @@ module Prepack
   @visitors = []
 end
 
-require 'prepack/format'
-require 'prepack/node'
-require 'prepack/parser'
-require 'prepack/version'
-require 'prepack/visitor'
-require 'prepack/visitors/arithmetic'
-require 'prepack/visitors/loops'
+require 'preval/format'
+require 'preval/node'
+require 'preval/parser'
+require 'preval/version'
+require 'preval/visitor'
+require 'preval/visitors/arithmetic'
+require 'preval/visitors/loops'

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Prepack
+module Preval
   module Format
     def self.to(type, &block)
       define_method(:"to_#{type}", &block)

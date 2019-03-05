@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
-require 'prepack'
+require 'preval'
 
-Prepack::Visitors::Arithmetic.enable!
-Prepack::Visitors::Loops.enable!
+Preval::Visitors::Arithmetic.enable!
+Preval::Visitors::Loops.enable!
 
 require 'irb'
 IRB.start(__FILE__)

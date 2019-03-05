@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Prepack
+module Preval
   class Parser < Ripper::SexpBuilder
     def self.parse(source)
       new(source).parse

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PrepackTest < Minitest::Test
+class PrevalTest < Minitest::Test
   Dir[File.join(__dir__, 'cases', '*.test')].each do |filepath|
     define_method(:"test_#{File.basename(filepath, '.test')}") do
       input, output = File.read(filepath).split("---\n")
@@ -44,6 +44,6 @@ class PrepackTest < Minitest::Test
   end
 
   def process(source)
-    Prepack.process(source)
+    Preval.process(source)
   end
 end
