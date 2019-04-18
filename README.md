@@ -4,7 +4,7 @@
 
 Certain optimizations that are common in compilers are not immediately possible with Ruby on account of Ruby's flexibility. For example, most compilers will run through a process called [constant folding](https://en.wikipedia.org/wiki/Constant_folding) to eliminate the need to perform extraneous operations at runtime (e.g., `5 + 2` in the source can be replaced with `7`). However, because Ruby allows you to override the `Integer#+` method, it's possible that `5 + 2` would not evaluate to `7`. `preval` assumes that most developers will not override the `Integer#+` method, and performs optimizations under that assumption.
 
-Users must opt in to each of `preval`'s optimizations, as there's no real way of telling whether or not it is 100% safe for any codebase. The more optimizations are allowed to run, the most time and memory savings later. Users can also define their own optimizations by subclassing the `Preval::Visitor` class and using the existing `Preval::Node` APIs to replace and update the Ruby AST as necessary.
+Users must opt in to each of `preval`'s optimizations, as there's no real way of telling whether or not it is 100% safe for any codebase. The more optimizations are allowed to run, the more time and memory savings later. Users can also define their own optimizations by subclassing the `Preval::Visitor` class and using the existing `Preval::Node` APIs to replace and update the Ruby AST as necessary.
 
 ## Installation
 
