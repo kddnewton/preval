@@ -17,6 +17,7 @@ class PrevalTest < Minitest::Test
     heredoc_dedent
     magic_comment
     mlhs_new
+    number_arg
     operator_ambiguous
     param_error
     parse_error

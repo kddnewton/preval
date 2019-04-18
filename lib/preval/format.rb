@@ -60,7 +60,7 @@ module Preval
     to(:do_block) { " do#{body[0] ? " #{source(0)}" : ''}\n#{source(1)}\nend" }
     to(:dot2) { join('..') }
     to(:dot3) { join('...') }
-    to(:dyna_symbol) { ":\"#{source(0)}\"" }
+    to(:dyna_symbol) { starts_with?(:xstring_add) ? ":\"#{source(0)}\"" : ":\"#{source(0).join}\"" }
     to(:END) { "END {\n#{source(0)}\n}"}
     to(:else) { "else\n#{source(0)}" }
     to(:elsif) { "elsif #{source(0)}\n#{source(1)}#{body[2] ? "\n#{source(2)}" : ''}" }
