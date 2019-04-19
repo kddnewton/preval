@@ -2,6 +2,25 @@
 
 module Preval
   class Node
+    class TypeMatch
+      attr_reader :types
+
+      def initialize(types)
+        @types = types
+      end
+
+      def match?(node)
+        node.body.size == types.size &&
+          node.body.zip(types).all? do |(left, right)|
+            Array(right).include?(left.type)
+          end
+      end
+
+      def self.match?(types, node)
+        new(types).match?(node)
+      end
+    end
+
     include Format
 
     attr_reader :type, :body, :literal
@@ -42,6 +61,10 @@ module Preval
       rescue NoMethodError
         raise NotImplementedError, "#{type} has not yet been implemented"
       end
+    end
+
+    def type_match?(types)
+      TypeMatch.new(types).match?(self)
     end
 
     def update(type, body)
