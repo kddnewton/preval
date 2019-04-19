@@ -28,13 +28,18 @@ If you're using the `bootsnap` gem, `preval` will automatically hook into its co
 
 Each optimization is generally named for the function it performs, and can be enabled through the `enable!` method on the visitor class. If you do not explicitly call `enable!` on any optimizations, nothing will change with your source.
 
-* `Preval::Visitors::Arithmetic`
-  * replaces constant expressions with their evaluation (e.g., `5 + 2` becomes `7`)
-  * replaces certain arithmetic identities with their evaluation (e.g., `a * 1` becomes `a`)
-* `Preval::Visitors::Micro`
-  * replaces `Array.reverse.each` with `Array.reverse_each`
-* `Preval::Visitors::Loops`
-  * replaces `while true ... end` loops with `loop do ... end` loops
+* `Preval::Visitors::Arithmetic` replaces:
+  * constant expressions with their evaluation (e.g., `5 + 2` becomes `7`)
+  * arithmetic identities with their evaluation (e.g., `a * 1` becomes `a`)
+* `Preval::Visitors::Micro` replaces:
+  * `def foo; @foo; end` with `attr_reader :foo`
+  * `.gsub('...', '...')` with `.tr('...', '...')` if the arguments are strings and are both of length 1
+  * `.map { ... }.flatten(1)` with `.flat_map { ... }`
+  * `.reverse.each` with `.reverse_each` 
+  * `.shuffle.first` with `.sample`
+* `Preval::Visitors::Loops` replaces:
+  * `for ... in ... end` loops with `... each do ... end` loops
+  * `while true ... end` loops with `loop do ... end` loops
 
 ## Development
 
