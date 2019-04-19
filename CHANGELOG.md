@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Replace `def foo=(value); @foo = value; end` with `attr_writer :foo`
+- Replace `while false ... end` loops with nothing
+- Replace `until false ... end` loops with `loop do ... end` loops
+- Replace `until true ... end` loops with nothing
+
+### Changed
+- Extracted out the `Preval::Visitors::AttrAccessor` visitor.
 
 ## [0.3.0] - 2019-04-19
 ### Added

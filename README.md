@@ -42,6 +42,9 @@ Each optimization is generally named for the function it performs, and can be en
 * `Preval::Visitors::Loops` replaces:
   * `for ... in ... end` loops with `... each do ... end` loops
   * `while true ... end` loops with `loop do ... end` loops
+  * `while false ... end` loops with nothing
+  * `until false ... end` loops with `loop do ... end` loops
+  * `until true ... end` loops with nothing
 
 ## Development
 
