@@ -4,7 +4,7 @@ class CasesTest < Minitest::Test
   Dir[File.join(__dir__, 'cases', '*.test')].each do |filepath|
     define_method(:"test_#{File.basename(filepath, '.test')}") do
       input, output = File.read(filepath).split("---\n")
-      assert_process input, output
+      assert_change input, output
     end
   end
 

@@ -2,7 +2,7 @@ require 'test_helper'
 
 class LoopsTest < Minitest::Test
   def test_while_true
-    assert_process <<~INPUT, <<~OUTPUT
+    assert_change <<~INPUT, <<~OUTPUT
       while true
         puts 'Hello, world!'
       end
@@ -14,7 +14,7 @@ class LoopsTest < Minitest::Test
   end
 
   def test_for
-    assert_process <<~INPUT, <<~OUTPUT
+    assert_change <<~INPUT, <<~OUTPUT
       for foo in [1, 2, 3]
         foo
       end

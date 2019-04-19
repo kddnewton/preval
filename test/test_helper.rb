@@ -10,7 +10,11 @@ require 'minitest/autorun'
 class Minitest::Test
   private
 
-  def assert_process(input, output)
+  def assert_change(input, output)
     assert_equal Preval.process(input).chomp, output.chomp
+  end
+
+  def refute_change(input)
+    assert_change input, input
   end
 end
