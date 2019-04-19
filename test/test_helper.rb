@@ -3,5 +3,6 @@ require 'preval'
 
 Preval::Visitors::Arithmetic.enable!
 Preval::Visitors::Loops.enable!
+Preval::Visitors::Micro.enable!
 
 require 'minitest/autorun'

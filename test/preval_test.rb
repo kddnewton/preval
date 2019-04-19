@@ -63,6 +63,13 @@ class PrevalTest < Minitest::Test
     assert_equal output, process(input)
   end
 
+  def test_micro
+    assert_equal '[].reverse_each', inline('[].reverse.each')
+    assert_equal 'foo.reverse_each', inline('foo.reverse.each')
+
+    assert_equal 'Foo.reverse.each', inline('Foo.reverse.each')
+  end
+
   private
 
   def inline(source)

@@ -31,6 +31,8 @@ Each optimization is generally named for the function it performs, and can be en
 * `Preval::Visitors::Arithmetic`
   * replaces constant expressions with their evaluation (e.g., `5 + 2` becomes `7`)
   * replaces certain arithmetic identities with their evaluation (e.g., `a * 1` becomes `a`)
+* `Preval::Visitors::Micro`
+  * replaces `Array.reverse.each` with `Array.reverse_each`
 * `Preval::Visitors::Loops`
   * replaces `while true ... end` loops with `loop do ... end` loops
 

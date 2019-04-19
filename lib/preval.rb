@@ -21,8 +21,10 @@ require 'preval/node'
 require 'preval/parser'
 require 'preval/version'
 require 'preval/visitor'
+
 require 'preval/visitors/arithmetic'
 require 'preval/visitors/loops'
+require 'preval/visitors/micro'
 
 if defined?(Bootsnap)
   load_iseq = RubyVM::InstructionSequence.method(:load_iseq)

@@ -5,6 +5,7 @@ require 'preval'
 
 Preval::Visitors::Arithmetic.enable!
 Preval::Visitors::Loops.enable!
+Preval::Visitors::Micro.enable!
 
 source = ARGV.first
 puts Preval.process(File.exist?(source) ? File.read(source) : source)
