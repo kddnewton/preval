@@ -6,11 +6,14 @@ module Preval
       def on_call(node)
         left, _period, right = node.body
 
-        if node.type_match?(:call, :@period, :@ident) && right.body == 'each'
+        if node.type_match?(:call, :@period, :@ident) && left.type_match?(%i[array vcall], :@period, :@ident)
           callleft, callperiod, callright = left.body
 
-          if left.type_match?(%i[array vcall], :@period, :@ident) && callright.body == 'reverse'
+          if callright.body == 'reverse' && right.body == 'each'
             callright.update(:@ident, 'reverse_each')
+            node.update(:call, [callleft, callperiod, callright])
+          elsif callright.body == 'shuffle' && right.body == 'first'
+            callright.update(:@ident, 'sample')
             node.update(:call, [callleft, callperiod, callright])
           end
         end
