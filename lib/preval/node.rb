@@ -31,14 +31,12 @@ module Preval
       @literal = literal
     end
 
-    def dig(index, *args)
+    def [](index, *args)
       node = body[index]
       return nil unless node
 
-      args.any? ? node.dig(*args) : node
+      args.any? ? node[*args] : node
     end
-
-    alias [] dig
 
     def join(delim = '')
       body.map(&:to_source).join(delim)
