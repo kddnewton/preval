@@ -2,7 +2,8 @@
 
 module Preval
   class Visitors
-    class Micro < Visitor
+    # All of these optimizations come from the `fasterer` gem.
+    class Fasterer < Visitor
       def on_call(node)
         left, _period, right = node.body
 

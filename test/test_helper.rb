@@ -3,8 +3,8 @@ require 'preval'
 
 Preval::Visitors::Arithmetic.enable!
 Preval::Visitors::AttrAccessor.enable!
+Preval::Visitors::Fasterer.enable!
 Preval::Visitors::Loops.enable!
-Preval::Visitors::Micro.enable!
 
 require 'minitest/autorun'
 

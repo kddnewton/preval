@@ -34,7 +34,7 @@ Each optimization is generally named for the function it performs, and can be en
 * `Preval::Visitors::AttrAccessor` replaces:
   * `def foo; @foo; end` with `attr_reader :foo`
   * `def foo=(value); @foo = value; end` with `attr_writer :foo`
-* `Preval::Visitors::Micro` replaces:
+* `Preval::Visitors::Fasterer` replaces:
   * `.gsub('...', '...')` with `.tr('...', '...')` if the arguments are strings and are both of length 1
   * `.map { ... }.flatten(1)` with `.flat_map { ... }`
   * `.reverse.each` with `.reverse_each` 

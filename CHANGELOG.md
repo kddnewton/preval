@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Changed
 - Extracted out the `Preval::Visitors::AttrAccessor` visitor.
+- Renamed the `Preval::Visitors::Micro` visitor to `Preval::Visitors::Fasterer`.
 
 ## [0.3.0] - 2019-04-19
 ### Added

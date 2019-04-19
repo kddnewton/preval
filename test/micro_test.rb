@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class MicroTest < Minitest::Test
+class FastererTest < Minitest::Test
   def test_attr_reader
     assert_change 'def foo; @foo; end', 'attr_reader :foo'
     refute_change "def foo \n@bar\nend"

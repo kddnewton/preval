@@ -6,8 +6,8 @@ require 'sinatra'
 
 Preval::Visitors::Arithmetic.enable!
 Preval::Visitors::AttrAccessor.enable!
+Preval::Visitors::Fasterer.enable!
 Preval::Visitors::Loops.enable!
-Preval::Visitors::Micro.enable!
 
 get '/' do
   send_file(File.expand_path('index.html', __dir__))
