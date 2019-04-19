@@ -11,7 +11,7 @@ get '/' do
 end
 
 post '/' do
-  Preval.process(request.body.read).tap do |response|
+  Preval.process(request.body.read || '').tap do |response|
     halt 422 unless response
   end
 end
