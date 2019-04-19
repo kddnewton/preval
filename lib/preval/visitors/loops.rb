@@ -13,13 +13,22 @@ module Preval
 
       using TrueNode
 
+      def on_for(node)
+        sexp = Parser.parse(<<~CODE)
+          #{node.source(1)}.each do |#{node.source(0)}|
+            #{node.source(2)}
+          end
+        CODE
+
+        node.update(:stmts_add, sexp.body[0].body)
+      end
+
       def on_while(node)
-        predicate, statements = node.body
-        return unless predicate.true?
+        return unless node.body[0].true?
 
         sexp = Parser.parse(<<~CODE)
           loop do
-            #{statements.to_source}
+            #{node.source(1)}
           end
         CODE
 

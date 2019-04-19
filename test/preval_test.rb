@@ -47,7 +47,7 @@ class PrevalTest < Minitest::Test
     assert_equal '-1', inline('-5 ** 0')
   end
 
-  def test_loops
+  def test_loops_while_true
     input = <<~RUBY
       while true
         puts 'Hello, world!'
@@ -57,6 +57,22 @@ class PrevalTest < Minitest::Test
     output = <<~RUBY
       loop do
       puts "Hello, world!"
+      end
+    RUBY
+
+    assert_equal output, process(input)
+  end
+
+  def test_loops_for
+    input = <<~RUBY
+      for foo in [1, 2, 3]
+        foo
+      end
+    RUBY
+
+    output = <<~RUBY
+      [1,2,3].each do |foo|
+      foo
       end
     RUBY
 

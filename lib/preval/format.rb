@@ -67,7 +67,7 @@ module Preval
     to(:ensure) { "ensure\n#{source(0)}" }
     to(:fcall) { join }
     to(:field) { join }
-    to(:for) { "#{source(1)}.each do |#{source(0)}|\n#{source(2)}\nend" }
+    to(:for) { "for #{source(0)} in #{source(1)} do\n#{source(2)}\nend" }
     to(:hash) { body[0].nil? ? '{}' : "{ #{join} }" }
     to(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     to(:if_mod) { "#{source(1)} if #{source(0)}" }
