@@ -11,7 +11,7 @@ class Minitest::Test
   private
 
   def assert_change(input, output)
-    assert_equal Preval.process(input).chomp, output.chomp
+    assert_equal output.chomp, Preval.process(input).chomp
   end
 
   def refute_change(input)

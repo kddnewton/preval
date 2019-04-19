@@ -9,7 +9,9 @@ module Preval
     attr_reader :visitors
 
     def process(source)
-      visitors.inject(source) { |accum, visitor| visitor.process(accum) }
+      visitors.inject(Parser.parse(source)) do |current, visitor|
+        current.tap { |ast| ast.visit(visitor) }
+      end.to_source
     end
   end
 
