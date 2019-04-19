@@ -31,8 +31,10 @@ Each optimization is generally named for the function it performs, and can be en
 * `Preval::Visitors::Arithmetic` replaces:
   * constant expressions with their evaluation (e.g., `5 + 2` becomes `7`)
   * arithmetic identities with their evaluation (e.g., `a * 1` becomes `a`)
-* `Preval::Visitors::Micro` replaces:
+* `Preval::Visitors::AttrAccessor` replaces:
   * `def foo; @foo; end` with `attr_reader :foo`
+  * `def foo=(value); @foo = value; end` with `attr_writer :foo`
+* `Preval::Visitors::Micro` replaces:
   * `.gsub('...', '...')` with `.tr('...', '...')` if the arguments are strings and are both of length 1
   * `.map { ... }.flatten(1)` with `.flat_map { ... }`
   * `.reverse.each` with `.reverse_each` 

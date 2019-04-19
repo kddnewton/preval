@@ -25,6 +25,7 @@ require 'preval/version'
 require 'preval/visitor'
 
 require 'preval/visitors/arithmetic'
+require 'preval/visitors/attr_accessor'
 require 'preval/visitors/loops'
 require 'preval/visitors/micro'
 

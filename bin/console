@@ -4,6 +4,7 @@ require 'bundler/setup'
 require 'preval'
 
 Preval::Visitors::Arithmetic.enable!
+Preval::Visitors::AttrAccessor.enable!
 Preval::Visitors::Loops.enable!
 Preval::Visitors::Micro.enable!
 
