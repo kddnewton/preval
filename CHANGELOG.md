@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Replace `def foo; @foo; end` with `attr_reader :foo`.
 - Replace `.shuffle.first` with `.sample`.
 - Replace `.map { ... }.flatten(1)` with `.flat_map { ... }`.
+- Replace `def foo=(value); @foo = value; end` with `attr_writer :foo`.
 
 ## [0.2.0] - 2019-04-18
 ### Added
