@@ -3,10 +3,7 @@
 require 'bundler/setup'
 require 'preval'
 
-Preval::Visitors::Arithmetic.enable!
-Preval::Visitors::AttrAccessor.enable!
-Preval::Visitors::Fasterer.enable!
-Preval::Visitors::Loops.enable!
+Preval.enable_all!
 
 require 'irb'
 IRB.start(__FILE__)

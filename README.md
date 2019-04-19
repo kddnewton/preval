@@ -46,6 +46,8 @@ Each optimization is generally named for the function it performs, and can be en
   * `until false ... end` loops with `loop do ... end` loops
   * `until true ... end` loops with nothing
 
+You can also call `Preval.enable_all!` which will enable every built-in visitor. Be especially careful when doing this.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

@@ -8,6 +8,13 @@ module Preval
   class << self
     attr_reader :visitors
 
+    def enable_all!
+      Visitors::Arithmetic.enable!
+      Visitors::AttrAccessor.enable!
+      Visitors::Fasterer.enable!
+      Visitors::Loops.enable!
+    end
+
     def process(source)
       visitors.inject(Parser.parse(source)) do |current, visitor|
         current.tap { |ast| ast.visit(visitor) }
@@ -26,8 +33,8 @@ require 'preval/visitor'
 
 require 'preval/visitors/arithmetic'
 require 'preval/visitors/attr_accessor'
+require 'preval/visitors/fasterer'
 require 'preval/visitors/loops'
-require 'preval/visitors/micro'
 
 if defined?(Bootsnap)
   load_iseq = RubyVM::InstructionSequence.method(:load_iseq)

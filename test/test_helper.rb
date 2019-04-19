@@ -1,10 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 require 'preval'
 
-Preval::Visitors::Arithmetic.enable!
-Preval::Visitors::AttrAccessor.enable!
-Preval::Visitors::Fasterer.enable!
-Preval::Visitors::Loops.enable!
+Preval.enable_all!
 
 require 'minitest/autorun'
 
