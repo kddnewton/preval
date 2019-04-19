@@ -33,7 +33,9 @@ module Preval
 
     def dig(index, *args)
       node = body[index]
-      node && args.any? ? node.dig(*args) : node
+      return nil unless node
+
+      args.any? ? node.dig(*args) : node
     end
 
     def join(delim = '')

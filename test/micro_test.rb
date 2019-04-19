@@ -16,4 +16,10 @@ class MicroTest < Minitest::Test
     assert_process 'foo.shuffle.first', 'foo.sample'
     assert_process 'Foo.shuffle.first', 'Foo.shuffle.first'
   end
+
+  def test_map_flatten
+    assert_process '[].map { |x| x }.flatten(1)', '[].flat_map { |x|x }'
+    assert_process 'foo.map { |x| x }.flatten(1)', 'foo.flat_map { |x|x }'
+    assert_process 'Foo.map { |x| x }.flatten(1)', 'Foo.map { |x|x }.flatten(1)'
+  end
 end
