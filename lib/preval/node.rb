@@ -12,7 +12,7 @@ module Preval
       def match?(node)
         node.body.size == types.size &&
           node.body.zip(types).all? do |(left, right)|
-            Array(right).include?(left.type)
+            left.is_a?(Node) && Array(right).include?(left.type)
           end
       end
 
@@ -29,6 +29,11 @@ module Preval
       @type = type
       @body = body
       @literal = literal
+    end
+
+    def dig(index, *args)
+      node = body[index]
+      node && args.any? ? node.dig(*args) : node
     end
 
     def join(delim = '')
@@ -63,7 +68,7 @@ module Preval
       end
     end
 
-    def type_match?(types)
+    def type_match?(*types)
       TypeMatch.new(types).match?(self)
     end
 
