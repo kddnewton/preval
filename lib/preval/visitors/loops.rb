@@ -17,7 +17,12 @@ module Preval
         predicate, statements = node.body
         return unless predicate.true?
 
-        sexp = Parser.parse("loop do\n#{statements.to_source}\nend")
+        sexp = Parser.parse(<<~CODE)
+          loop do
+            #{statements.to_source}
+          end
+        CODE
+
         node.update(:stmts_add, sexp.body[0].body)
       end
     end
