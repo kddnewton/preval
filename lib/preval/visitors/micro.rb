@@ -16,6 +16,23 @@ module Preval
         end
       end
 
+      def on_def(node)
+        if node.type_match?(:@ident, :params, :bodystmt) &&
+           node.body[1].body.none? &&
+           node.dig(2, 0, 0).is?(:stmts_new) &&
+
+          var_ref = node.dig(2, 0, 1)
+
+          if var_ref.is?(:var_ref) &&
+             var_ref.type_match?(:@ivar) &&
+             node.body[0].body == var_ref.body[0].body[1..-1]
+
+            sexp = Parser.parse("attr_reader :#{node.body[0].body}")
+            node.update(:stmts_add, sexp.body[0].body)
+          end
+        end
+      end
+
       def on_method_add_arg(node)
         if node.type_match?(:call, :arg_paren) &&
            node.body[0].type_match?(:vcall, :@period, :@ident) &&

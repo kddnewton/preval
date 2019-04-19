@@ -4,7 +4,7 @@ class PrevalTest < Minitest::Test
   Dir[File.join(__dir__, 'cases', '*.test')].each do |filepath|
     define_method(:"test_#{File.basename(filepath, '.test')}") do
       input, output = File.read(filepath).split("---\n")
-      assert_equal output, process(input)
+      assert_process input, output
     end
   end
 
@@ -32,71 +32,53 @@ class PrevalTest < Minitest::Test
   end
 
   def test_arithmetic
-    assert_equal '7', inline('3 + 4')
+    assert_process '3 + 4', '7'
 
-    assert_equal 'a', inline('a + 0')
-    assert_equal 'a', inline('0 + a')
+    assert_process 'a + 0', 'a'
+    assert_process '0 + a', 'a'
 
-    assert_equal 'a', inline('a * 1')
-    assert_equal 'a', inline('1 * a')
+    assert_process 'a * 1', 'a'
+    assert_process '1 * a', 'a'
 
-    assert_equal 'a', inline('a ** 1')
-    assert_equal '1', inline('1 ** a')
+    assert_process 'a ** 1', 'a'
+    assert_process '1 ** a', '1'
 
-    assert_equal '1', inline('5 ** 0')
-    assert_equal '-1', inline('-5 ** 0')
+    assert_process '5 ** 0', '1'
+    assert_process '-5 ** 0', '-1'
   end
 
   def test_loops_while_true
-    input = <<~RUBY
+    assert_process <<~INPUT, <<~OUTPUT
       while true
         puts 'Hello, world!'
       end
-    RUBY
-
-    output = <<~RUBY
+    INPUT
       loop do
       puts "Hello, world!"
       end
-    RUBY
-
-    assert_equal output, process(input)
+    OUTPUT
   end
 
   def test_loops_for
-    input = <<~RUBY
+    assert_process <<~INPUT, <<~OUTPUT
       for foo in [1, 2, 3]
         foo
       end
-    RUBY
-
-    output = <<~RUBY
+    INPUT
       [1, 2, 3].each do |foo|
       foo
       end
-    RUBY
-
-    assert_equal output, process(input)
+    OUTPUT
   end
 
   def test_micro_reverse_each
-    assert_equal '[].reverse_each', inline('[].reverse.each')
-    assert_equal 'foo.reverse_each', inline('foo.reverse.each')
+    assert_process '[].reverse.each', '[].reverse_each'
+    assert_process 'foo.reverse.each', 'foo.reverse_each'
 
-    assert_equal 'Foo.reverse.each', inline('Foo.reverse.each')
+    assert_process 'Foo.reverse.each', 'Foo.reverse.each'
   end
 
   def test_micro_gsub_tr
-    assert_equal 'foo.tr("a", "b")', inline('foo.gsub("a", "b")')
-  end
-
-  private
-
-  def inline(source)
-    process(source).chomp
-  end
-
-  def process(source)
-    Preval.process(source)
+    assert_process 'foo.gsub("a", "b")', 'foo.tr("a", "b")'
   end
 end

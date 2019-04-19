@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Replace `.reverse.each` usage with `.reverse_each`.
 - Replace `foo ... in` loops with `.each do` loops.
 - Replace `.gsub('...', '...')` with `.tr('...', '...')` if the arguments are strings and they are of length 1.
+- Replace `def foo; @foo; end` with `attr_reader :foo`.
 
 ## [0.2.0] - 2019-04-18
 ### Added

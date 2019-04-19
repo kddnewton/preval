@@ -6,3 +6,11 @@ Preval::Visitors::Loops.enable!
 Preval::Visitors::Micro.enable!
 
 require 'minitest/autorun'
+
+class Minitest::Test
+  private
+
+  def assert_process(input, output)
+    assert_equal Preval.process(input).chomp, output.chomp
+  end
+end
