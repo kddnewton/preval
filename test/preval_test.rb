@@ -42,6 +42,9 @@ class PrevalTest < Minitest::Test
 
     assert_equal 'a', inline('a ** 1')
     assert_equal '1', inline('1 ** a')
+
+    assert_equal '1', inline('5 ** 0')
+    assert_equal '-1', inline('-5 ** 0')
   end
 
   def test_loops

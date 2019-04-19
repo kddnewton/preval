@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'ripper'
+
+source = ARGV.first
+pp Ripper.sexp_raw(File.exist?(source) ? File.read(source) : source)

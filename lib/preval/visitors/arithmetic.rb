@@ -38,7 +38,9 @@ module Preval
             node.replace(right)
           end
         elsif operation == :**
-          if right.int?(1)
+          if left.is?(:@int) && right.int?(0)
+            node.update(:@int, left.to_int < 0 ? -1 : 1)
+          elsif right.int?(1)
             node.replace(left)
           elsif left.int?(1)
             node.replace(left)
