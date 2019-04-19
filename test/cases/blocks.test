@@ -66,8 +66,8 @@ loop do |i|
 i
 end
 loop { |*|i }
-loop { |(a,b)|i }
-loop { |a,(b,c),d,*e|i }
+loop { |(a, b)|i }
+loop { |a, (b, c), d, *e|i }
 loop { |i|i.to_s }
 loop do |i|
 i.to_s
@@ -79,8 +79,8 @@ end
 loop do |i|
 i.to_s :db
 end
-loop { |i,j|i.to_s }
-[1,2,3].each do |i|
+loop { |i, j|i.to_s }
+[1, 2, 3].each do |i|
 p i
 end
 def change 

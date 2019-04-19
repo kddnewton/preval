@@ -71,7 +71,7 @@ class PrevalTest < Minitest::Test
     RUBY
 
     output = <<~RUBY
-      [1,2,3].each do |foo|
+      [1, 2, 3].each do |foo|
       foo
       end
     RUBY
@@ -87,7 +87,7 @@ class PrevalTest < Minitest::Test
   end
 
   def test_micro_gsub_tr
-    assert_equal 'foo.tr("a","b")', inline('foo.gsub("a", "b")')
+    assert_equal 'foo.tr("a", "b")', inline('foo.gsub("a", "b")')
   end
 
   private

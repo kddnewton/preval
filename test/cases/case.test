@@ -42,7 +42,7 @@ when b
 1
 end
 case a
-when b,c
+when b, c
 1
 end
 case a

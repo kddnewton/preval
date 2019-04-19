@@ -10,23 +10,23 @@ module Preval
     to(:aref) { body[1] ? "#{source(0)}[#{source(1)}]" : "#{source(0)}[]" }
     to(:aref_field) { "#{source(0)}[#{source(1)}]" }
     to(:arg_paren) { body[0].nil? ? '' : "(#{source(0)})" }
-    to(:args_add) { starts_with?(:args_new) ? source(1) : join(',') }
+    to(:args_add) { starts_with?(:args_new) ? source(1) : join(', ') }
     to(:args_add_block) do
       args, block = body
 
       parts = args.is?(:args_new) ? [] : [args.to_source]
-      parts << "#{parts.any? ? ',' : ''}&#{block.to_source}" if block
+      parts << "#{parts.any? ? ', ' : ''}&#{block.to_source}" if block
 
       parts.join
     end
-    to(:args_add_star) { starts_with?(:args_new) ? "*#{source(1)}" : "#{source(0)},*#{source(1)}" }
+    to(:args_add_star) { starts_with?(:args_new) ? "*#{source(1)}" : "#{source(0)}, *#{source(1)}" }
     to(:args_new) { '' }
     to(:assign) { "#{source(0)} = #{source(1)}" }
     to(:array) { body[0].nil? ? '[]' : "#{starts_with?(:args_add) ? '[' : ''}#{source(0)}]" }
     to(:assoc_new) { starts_with?(:@label) ? join(' ') : join(' => ') }
     to(:assoc_splat) { "**#{source(0)}" }
-    to(:assoclist_from_args) { body[0].map(&:to_source).join(',') }
-    to(:bare_assoc_hash) { body[0].map(&:to_source).join(',') }
+    to(:assoclist_from_args) { body[0].map(&:to_source).join(', ') }
+    to(:bare_assoc_hash) { body[0].map(&:to_source).join(', ') }
     to(:begin) { "begin\n#{join("\n")}\nend" }
     to(:BEGIN) { "BEGIN {\n#{source(0)}\n}"}
     to(:binary) { "#{source(0)} #{body[1]} #{source(2)}" }
@@ -78,11 +78,11 @@ module Preval
     to(:method_add_arg) { body[1].is?(:args_new) ? source(0) : join }
     to(:method_add_block) { join }
     to(:methref) { join('.:') }
-    to(:mlhs_add) { starts_with?(:mlhs_new) ? source(1) : join(',') }
-    to(:mlhs_add_post) { join(',') }
-    to(:mlhs_add_star) { "#{starts_with?(:mlhs_new) ? '' : "#{source(0)},"}#{body[1] ? "*#{source(1)}" : '*'}" }
+    to(:mlhs_add) { starts_with?(:mlhs_new) ? source(1) : join(', ') }
+    to(:mlhs_add_post) { join(', ') }
+    to(:mlhs_add_star) { "#{starts_with?(:mlhs_new) ? '' : "#{source(0)}, "}#{body[1] ? "*#{source(1)}" : '*'}" }
     to(:mlhs_paren) { "(#{source(0)})" }
-    to(:mrhs_add) { join(',') }
+    to(:mrhs_add) { join(', ') }
     to(:mrhs_add_star) { "*#{join}" }
     to(:mrhs_new) { '' }
     to(:mrhs_new_from_args) { source(0) }
@@ -102,7 +102,7 @@ module Preval
       parts << kwarg_rest.to_source if kwarg_rest
       parts << block.to_source if block
 
-      parts.join(',')
+      parts.join(', ')
     end
     to(:program) { "#{join("\n")}\n" }
     to(:qsymbols_add) { join(starts_with?(:qsymbols_new) ? '' : ' ') }

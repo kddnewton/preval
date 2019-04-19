@@ -24,7 +24,7 @@ retry
 rescue NoMethodError => exception
 puts exception
 redo
-rescue SyntaxError,NoMethodError
+rescue SyntaxError, NoMethodError
 2
 rescue
 3
