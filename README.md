@@ -24,9 +24,9 @@ Or install it yourself as:
 
 ## Usage
 
-At the moment, this gem is a POC and should not be used in production. If you want to experiment with it, you can use the `bootsnap` gem to hook into the compilation process and run `Preval.process` over the source as it comes through. This will eventually be automated.
+If you're using the `bootsnap` gem, `preval` will automatically hook into its compilation step. Otherwise, you'll need to manually call `Preval.process(source)` with your own iseq loader (you can check out [yomikomu](https://github.com/ko1/yomikomu) for an example).
 
-Each optimization is generally named for the function it performs, and can be enabled through the `enable!` method on the visitor class.
+Each optimization is generally named for the function it performs, and can be enabled through the `enable!` method on the visitor class. If you do not explicitly call `enable!` on any optimizations, nothing will change with your source.
 
 * `Preval::Visitors::Arithmetic`
   * replaces constant expressions with their evaluation (e.g., `5 + 2` becomes `7`)

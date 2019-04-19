@@ -6,7 +6,10 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    bootsnap (1.4.3)
+      msgpack (~> 1.0)
     minitest (5.11.3)
+    msgpack (1.2.10)
     mustermann (1.0.3)
     rack (2.0.6)
     rack-protection (2.0.5)
@@ -23,6 +26,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bootsnap
   bundler (~> 2.0)
   minitest (~> 5.11)
   preval!

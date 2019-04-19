@@ -23,3 +23,20 @@ require 'preval/version'
 require 'preval/visitor'
 require 'preval/visitors/arithmetic'
 require 'preval/visitors/loops'
+
+if defined?(Bootsnap)
+  load_iseq = RubyVM::InstructionSequence.method(:load_iseq)
+
+  if load_iseq.source_location[0].include?('/bootsnap/')
+    Bootsnap::CompileCache::ISeq.singleton_class.prepend(
+      Module.new do
+        def input_to_storage(source, path)
+          source = Preval.process(source)
+          RubyVM::InstructionSequence.compile(source, path, path).to_binary
+        rescue SyntaxError
+          raise Bootsnap::CompileCache::Uncompilable, 'syntax error'
+        end
+      end
+    )
+  end
+end
