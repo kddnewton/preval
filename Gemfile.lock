@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    preval (0.2.0)
+    preval (0.3.0)
 
 GEM
   remote: https://rubygems.org/
