@@ -3,19 +3,19 @@
 module Preval
   class Visitors
     class Arithmetic < Visitor
-      module IntNode
-        refine Node do
-          def int?(value)
-            is?(:@int) && to_int == value
-          end
+      using(
+        Module.new do
+          refine Node do
+            def int?(value)
+              is?(:@int) && to_int == value
+            end
 
-          def to_int
-            body[0].to_i
+            def to_int
+              body[0].to_i
+            end
           end
         end
-      end
-
-      using IntNode
+      )
 
       OPERATORS = %i[+ - * / % **].freeze
 
