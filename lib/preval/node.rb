@@ -38,6 +38,8 @@ module Preval
       args.any? ? node.dig(*args) : node
     end
 
+    alias [] dig
+
     def join(delim = '')
       body.map(&:to_source).join(delim)
     end
