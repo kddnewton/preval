@@ -6,9 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [0.2.0] - 2019-04-18
+### Added
+- Hook into the `bootsnap` gem if it's loaded.
+
 ## [0.1.0] - 2019-03-08
 ### Added
 - Initial release. 🎉
 
-[Unreleased]: https://github.com/kddeisz/preval/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/kddeisz/preval/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/kddeisz/preval/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kddeisz/preval/compare/49c899...v0.1.0
