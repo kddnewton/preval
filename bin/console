@@ -5,6 +5,7 @@ require 'preval'
 
 Preval::Visitors::Arithmetic.enable!
 Preval::Visitors::Loops.enable!
+Preval::Visitors::Micro.enable!
 
 require 'irb'
 IRB.start(__FILE__)
