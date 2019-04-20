@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [0.4.1] - 2019-04-20
+### Changed
+- Support `attr_writer` transformations even if there is a void statement at the beginning of the method.
+
 ## [0.4.0] - 2019-04-19
 ### Added
 - Replace `def foo=(value); @foo = value; end` with `attr_writer :foo`
@@ -36,7 +40,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 - Initial release. 🎉
 
-[Unreleased]: https://github.com/kddeisz/preval/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/kddeisz/preval/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/kddeisz/preval/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/kddeisz/preval/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kddeisz/preval/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kddeisz/preval/compare/v0.1.0...v0.2.0
