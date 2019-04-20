@@ -26,27 +26,58 @@ Or install it yourself as:
 
 If you're using the `bootsnap` gem, `preval` will automatically hook into its compilation step. Otherwise, you'll need to manually call `Preval.process(source)` with your own iseq loader (you can check out [yomikomu](https://github.com/ko1/yomikomu) for an example).
 
-Each optimization is generally named for the function it performs, and can be enabled through the `enable!` method on the visitor class. If you do not explicitly call `enable!` on any optimizations, nothing will change with your source.
+Each optimization is generally named for the function it performs, and can be enabled through the `enable!` method on the visitor class. If you do not explicitly call `enable!` on any optimizations, nothing will change with your source. You can also call `Preval.enable_all!` which will enable every built-in visitor. Be especially careful when doing this.
 
-* `Preval::Visitors::Arithmetic` replaces:
+### `Preval::Visitors::Arithmetic`
+
+Replaces:
+
   * constant expressions with their evaluation (e.g., `5 + 2` becomes `7`)
   * arithmetic identities with their evaluation (e.g., `a * 1` becomes `a`)
-* `Preval::Visitors::AttrAccessor` replaces:
+
+Unsafe if:
+
+  * you overload any of the `Integer` operator methods
+
+### `Preval::Visitors::AttrAccessor`
+
+Replaces:
+
   * `def foo; @foo; end` with `attr_reader :foo`
   * `def foo=(value); @foo = value; end` with `attr_writer :foo`
-* `Preval::Visitors::Fasterer` replaces:
+
+Unsafe if:
+
+  * you overload the `attr_reader` method
+  * you overload the `attr_writer` method
+  * you have custom complex `method_added` logic
+
+### `Preval::Visitors::Fasterer`
+
+Replaces:
+
   * `.gsub('...', '...')` with `.tr('...', '...')` if the arguments are strings and are both of length 1
   * `.map { ... }.flatten(1)` with `.flat_map { ... }`
   * `.reverse.each` with `.reverse_each` 
   * `.shuffle.first` with `.sample`
-* `Preval::Visitors::Loops` replaces:
+
+Unsafe if:
+
+  * any of the effected methods are overwritten or custom (`gsub` and `tr` for the first one, `map`, `flatten`, and `flat_map` for the second, etc.)
+
+### `Preval::Visitors::Loops`
+
+Replaces:
+
   * `for ... in ... end` loops with `... each do ... end` loops
   * `while true ... end` loops with `loop do ... end` loops
   * `while false ... end` loops with nothing
   * `until false ... end` loops with `loop do ... end` loops
   * `until true ... end` loops with nothing
 
-You can also call `Preval.enable_all!` which will enable every built-in visitor. Be especially careful when doing this.
+Unsafe if:
+
+  * the object over which you're iterating with a `for` loop has a custom `each` method that doesn't do what you'd expect it to do
 
 ## Development
 
