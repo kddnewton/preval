@@ -42,28 +42,104 @@ textarea, code {
       <code></code>
     </main>
     <script>
-const textarea = document.querySelector("textarea");
-const code = document.querySelector("code");
+(() => {
+  const textarea = document.querySelector("textarea");
+  const code = document.querySelector("code");
 
-const fetchCode = () => {
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", "/", true);
+  const fetchCode = () => {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/", true);
 
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      code.innerText = xhr.status === 200 ? xhr.responseText : "";
-    }
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        code.innerText = xhr.status === 200 ? xhr.responseText : "";
+      }
+    };
+
+    xhr.send(textarea.value);
   };
 
-  xhr.send(textarea.value);
-};
+  let timeout = 0;
 
-let timeout = 0;
+  textarea.addEventListener("input", () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(fetchCode, 300);
+  });
 
-textarea.addEventListener("input", () => {
-  clearTimeout(timeout);
-  timeout = setTimeout(fetchCode, 300);
-});
+  const handleTab = event => {
+    event.preventDefault();
+
+    const { selectionStart, selectionEnd, value } = textarea;
+
+    const preSpace = value.substring(0, selectionStart);
+    const postSpace = value.substring(selectionEnd);
+
+    textarea.value = `${preSpace}  ${postSpace}`;
+    textarea.selectionStart = textarea.selectionEnd = selectionStart + 2;
+  };
+
+  const indentLine = line => `  ${line}`;
+  const dedentLine = line => {
+    if (line.startsWith("  ")) {
+      return line.slice(2);
+    }
+    if (line.startsWith(" ")) {
+      return line.slice(1);
+    }
+    return line;
+  };
+
+  const handleDent = event => {
+    event.preventDefault();
+
+    const { selectionStart, selectionEnd, value } = textarea;
+    const lines = value.split("\n");
+
+    let currentStart = selectionStart;
+    let currentEnd = selectionEnd;
+    let startLine = null;
+    let endLine = null;
+
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx += 1) {
+      currentStart -= (lines[lineIdx].length + 1);
+      if (startLine === null && currentStart < 0) {
+        startLine = lineIdx;
+      }
+
+      currentEnd -= (lines[lineIdx].length + 1);
+      if (endLine === null && currentEnd < 0) {
+        endLine = lineIdx;
+      }
+
+      if (currentStart < 0 && currentEnd < 0) {
+        break;
+      }
+    }
+
+    const nextLines = (
+      lines.slice(0, startLine)
+        .concat(lines.slice(startLine, endLine + 1).map(
+          event.key === "]" ? indentLine : dedentLine
+        ))
+        .concat(lines.slice(endLine + 1))
+    );
+
+    textarea.value = nextLines.join("\n");
+
+    const buffer = nextLines.slice(0, startLine + 1).join("\n").length;
+    textarea.selectionStart = textarea.selectionEnd = (
+      buffer + currentStart + 1
+    );
+  };
+
+  textarea.addEventListener("keydown", event => {
+    if (event.key === "Tab") {
+      handleTab(event);
+    } else if (["[", "]"].includes(event.key) && event.metaKey) {
+      handleDent(event);
+    }
+  });
+})();
     </script>
   </body>
 </html>

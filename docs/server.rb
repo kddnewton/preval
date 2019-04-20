@@ -14,4 +14,6 @@ post '/' do
   Preval.process(request.body.read || '').tap do |response|
     halt 422 unless response
   end
+rescue NoMethodError
+  halt 422
 end
