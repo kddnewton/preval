@@ -1,5 +1,7 @@
 # Preval
 
+[![Build Status](https://travis-ci.com/kddeisz/preval.svg?branch=master)](https://travis-ci.com/kddeisz/preval)
+
 `preval` is a gem that hooks into the Ruby compilation process and runs optimizations before it gets loaded by the virtual machine.
 
 Certain optimizations that are common in compilers are not immediately possible with Ruby on account of Ruby's flexibility. For example, most compilers will run through a process called [constant folding](https://en.wikipedia.org/wiki/Constant_folding) to eliminate the need to perform extraneous operations at runtime (e.g., `5 + 2` in the source can be replaced with `7`). However, because Ruby allows you to override the `Integer#+` method, it's possible that `5 + 2` would not evaluate to `7`. `preval` assumes that most developers will not override the `Integer#+` method, and performs optimizations under that assumption.
