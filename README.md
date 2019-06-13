@@ -34,54 +34,54 @@ Each optimization is generally named for the function it performs, and can be en
 
 Replaces:
 
-  * constant expressions with their evaluation (e.g., `5 + 2` becomes `7`)
-  * arithmetic identities with their evaluation (e.g., `a * 1` becomes `a`)
+- constant expressions with their evaluation (e.g., `5 + 2` becomes `7`)
+- arithmetic identities with their evaluation (e.g., `a * 1` becomes `a`)
 
 Unsafe if:
 
-  * you overload any of the `Integer` operator methods
+- you overload any of the `Integer` operator methods
 
 ### `Preval::Visitors::AttrAccessor`
 
 Replaces:
 
-  * `def foo; @foo; end` with `attr_reader :foo`
-  * `def foo=(value); @foo = value; end` with `attr_writer :foo`
+- `def foo; @foo; end` with `attr_reader :foo`
+- `def foo=(value); @foo = value; end` with `attr_writer :foo`
 
 Unsafe if:
 
-  * you overload the `attr_reader` method
-  * you overload the `attr_writer` method
-  * you have custom complex `method_added` logic
+- you overload the `attr_reader` method
+- you overload the `attr_writer` method
+- you have custom complex `method_added` logic
 
 ### `Preval::Visitors::Fasterer`
 
 Replaces:
 
-  * `.gsub('...', '...')` with `.tr('...', '...')` if the arguments are strings and are both of length 1
-  * `.map { ... }.flatten(1)` with `.flat_map { ... }`
-  * `.reverse.each` with `.reverse_each` 
-  * `.shuffle.first` with `.sample`
-  * `.sort.first` with `.min`
-  * `.sort.last` with `.max`
+- `.gsub('...', '...')` with `.tr('...', '...')` if the arguments are strings and are both of length 1
+- `.map { ... }.flatten(1)` with `.flat_map { ... }`
+- `.reverse.each` with `.reverse_each`
+- `.shuffle.first` with `.sample`
+- `.sort.first` with `.min`
+- `.sort.last` with `.max`
 
 Unsafe if:
 
-  * any of the effected methods are overwritten or custom (`gsub` and `tr` for the first one, `map`, `flatten`, and `flat_map` for the second, etc.)
+- any of the effected methods are overwritten or custom (`gsub` and `tr` for the first one, `map`, `flatten`, and `flat_map` for the second, etc.)
 
 ### `Preval::Visitors::Loops`
 
 Replaces:
 
-  * `for ... in ... end` loops with `... each do ... end` loops
-  * `while true ... end` loops with `loop do ... end` loops
-  * `while false ... end` loops with nothing
-  * `until false ... end` loops with `loop do ... end` loops
-  * `until true ... end` loops with nothing
+- `for ... in ... end` loops with `... each do ... end` loops
+- `while true ... end` loops with `loop do ... end` loops
+- `while false ... end` loops with nothing
+- `until false ... end` loops with `loop do ... end` loops
+- `until true ... end` loops with nothing
 
 Unsafe if:
 
-  * the object over which you're iterating with a `for` loop has a custom `each` method that doesn't do what you'd expect it to do
+- the object over which you're iterating with a `for` loop has a custom `each` method that doesn't do what you'd expect it to do
 
 ## Development
 
