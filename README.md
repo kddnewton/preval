@@ -1,6 +1,7 @@
 # Preval
 
 [![Build Status](https://travis-ci.com/kddeisz/preval.svg?branch=master)](https://travis-ci.com/kddeisz/preval)
+[![Gem](https://img.shields.io/gem/v/preval.svg)](https://rubygems.org/gems/preval)
 
 `preval` is a gem that hooks into the Ruby compilation process and runs optimizations before it gets loaded by the virtual machine.
 
