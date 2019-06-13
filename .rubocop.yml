@@ -4,6 +4,7 @@ AllCops:
   TargetRubyVersion: 2.6
   Exclude:
   - lib/preval/format.rb
+  - vendor/**/*
 
 Layout/CommentIndentation:
   Enabled: false
