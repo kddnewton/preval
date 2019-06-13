@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class EventTypesTest < Minitest::Test
@@ -15,7 +17,7 @@ class EventTypesTest < Minitest::Test
     param_error
     parse_error
     stmts_new
-  ]
+  ].freeze
 
   def test_event_types
     methods =

@@ -3,7 +3,7 @@
 require 'ripper'
 
 module Preval
-  SyntaxError = Class.new(SyntaxError)
+  SyntaxError = Class.new(::SyntaxError)
 
   class << self
     attr_reader :visitors

@@ -6,15 +6,15 @@ module Preval
       def on_def(node)
         # auto create attr_readers
         if node.type_match?(:@ident, :params, :bodystmt) &&
-             # def foo; @foo; end
+           # def foo; @foo; end
            node[1].body.none? &&
-             # there are no params to this method
+           # there are no params to this method
            node[2, 0].type_match?(:stmts_new, :var_ref) &&
-             # there is only one statement in the body and its a var reference
+           # there is only one statement in the body and its a var reference
            node[2, 0, 1, 0].is?(:@ivar) &&
-             # the var reference is referencing an instance variable
+           # the var reference is referencing an instance variable
            node[0].body == node[2, 0, 1, 0].body[1..-1]
-             # the name of the variable matches the name of the method
+           # the name of the variable matches the name of the method
 
           ast = Parser.parse("attr_reader :#{node[0].body}")
           node.update(:stmts_add, ast.body[0].body)
@@ -22,28 +22,28 @@ module Preval
 
         # auto create attr_writers
         if node.type_match?(:@ident, :paren, :bodystmt) &&
-             # def foo=(value); @foo = value; end
+           # def foo=(value); @foo = value; end
            node[0].body.end_with?('=') &&
-             # this is a setter method
+           # this is a setter method
            node[1, 0, 0].length == 1 &&
-             # there is exactly one required param
+           # there is exactly one required param
            node[1, 0].body[1..-1].none? &&
-             # there are no other params
+           # there are no other params
            (
              node[2, 0].type_match?(:stmts_new, :assign) || (
                node[2, 0, 0].type_match?(:stmts_new, :void_stmt) &&
                node[2, 0].type_match?(:stmts_add, :assign)
              )
            ) &&
-             # there is only one statement in the body and it's an assignment
+           # there is only one statement in the body and it's an assignment
            node[2, 0, 1].type_match?(:var_field, :var_ref) &&
-             # assigning a variable
+           # assigning a variable
            node[2, 0, 1, 0, 0].is?(:@ivar) &&
-             # assigning to an instance variable
+           # assigning to an instance variable
            node[0].body[0..-2] == node[2, 0, 1, 0, 0].body[1..-1] &&
-             # variable name matches the method name
+           # variable name matches the method name
            node[1, 0, 0][0].body == node[2, 0, 1, 1, 0].body
-             # assignment variable matches the argument name
+           # assignment variable matches the argument name
 
           ast = Parser.parse("attr_writer :#{node[0].body[0..-2]}")
           node.update(:stmts_add, ast.body[0].body)
