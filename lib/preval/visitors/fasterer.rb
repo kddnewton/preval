@@ -12,8 +12,8 @@ module Preval
         # replace `.sort.first` with `min`
         # replace `.sort.last` with `max`
         if node.type_match?(:call, :@period, :@ident) &&
-            # foo.each
-            left.type_match?(%i[array vcall], :@period, :@ident)
+          # foo.each
+          left.type_match?(%i[array vcall], :@period, :@ident)
           # foo.reverse
 
           callleft, callperiod, callright = left.body
