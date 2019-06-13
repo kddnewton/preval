@@ -17,6 +17,18 @@ class FastererTest < Minitest::Test
     refute_change 'Foo.shuffle.first'
   end
 
+  def test_sort_first
+    assert_change '[].sort.first', '[].min'
+    assert_change 'foo.sort.first', 'foo.min'
+    refute_change 'Foo.sort.first'
+  end
+
+  def test_sort_last
+    assert_change '[].sort.last', '[].max'
+    assert_change 'foo.sort.last', 'foo.max'
+    refute_change 'Foo.sort.last'
+  end
+
   def test_map_flatten
     assert_change '[].map { |x| x }.flatten(1)', '[].flat_map { |x|x }'
     assert_change 'foo.map { |x| x }.flatten(1)', 'foo.flat_map { |x|x }'

@@ -9,15 +9,23 @@ module Preval
 
         # replace `.reverse.each` with `.reverse_each`
         # replace `.shuffle.first` with `.sample`
+        # replace `.sort.first` with `min`
+        # replace `.sort.last` with `max`
         if node.type_match?(:call, :@period, :@ident) &&
-             # foo.each
-           left.type_match?(%i[array vcall], :@period, :@ident)
-             # foo.reverse
+            # foo.each
+            left.type_match?(%i[array vcall], :@period, :@ident)
+          # foo.reverse
 
           callleft, callperiod, callright = left.body
 
           if callright.body == 'reverse' && right.body == 'each'
             callright.update(:@ident, 'reverse_each')
+            node.update(:call, [callleft, callperiod, callright])
+          elsif callright.body == 'sort' && right.body == 'first'
+            callright.update(:@ident, 'min')
+            node.update(:call, [callleft, callperiod, callright])
+          elsif callright.body == 'sort' && right.body == 'last'
+            callright.update(:@ident, 'max')
             node.update(:call, [callleft, callperiod, callright])
           elsif callright.body == 'shuffle' && right.body == 'first'
             callright.update(:@ident, 'sample')
