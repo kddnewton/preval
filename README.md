@@ -62,6 +62,8 @@ Replaces:
   * `.map { ... }.flatten(1)` with `.flat_map { ... }`
   * `.reverse.each` with `.reverse_each` 
   * `.shuffle.first` with `.sample`
+  * `.sort.first` with `.min`
+  * `.sort.last` with `.max`
 
 Unsafe if:
 

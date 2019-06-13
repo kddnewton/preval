@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+### Added
+- Replace `.sort.first` with `.min`.
+- Replace `.sort.last` with `.max`.
+
 ## [0.4.1] - 2019-04-20
 ### Changed
 - Support `attr_writer` transformations even if there is a void statement at the beginning of the method.
