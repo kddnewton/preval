@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [0.6.0] - 2019-12-31
+
+### Added
+
+- Support for `nokw_param`, `args_forward`, and `in` nodes.
+
 ## [0.5.0] - 2019-06-13
 
 ### Added

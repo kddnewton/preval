@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    preval (0.5.0)
+    preval (0.6.0)
 
 GEM
   remote: https://rubygems.org/
@@ -50,4 +50,4 @@ DEPENDENCIES
   sinatra
 
 BUNDLED WITH
-   2.1.1
+   2.1.2

@@ -20,6 +20,7 @@ module Preval
       parts.join
     end
     to(:args_add_star) { starts_with?(:args_new) ? "*#{source(1)}" : "#{source(0)}, *#{source(1)}" }
+    to(:args_forward) { '...' }
     to(:args_new) { '' }
     to(:assign) { "#{source(0)} = #{source(1)}" }
     to(:array) { body[0].nil? ? '[]' : "#{starts_with?(:args_add) ? '[' : ''}#{source(0)}]" }
@@ -72,6 +73,7 @@ module Preval
     to(:if) { "if #{source(0)}\n#{source(1)}\n#{body[2] ? "#{source(2)}\n" : ''}end" }
     to(:if_mod) { "#{source(1)} if #{source(0)}" }
     to(:ifop) { "#{source(0)} ? #{source(1)} : #{source(2)}"}
+    to(:in) { "in #{source(0)}\n#{source(1)}" }
     to(:kwrest_param) { "**#{body[0] ? source(0) : ''}" }
     to(:lambda) { "->(#{starts_with?(:paren) ? body[0].body[0].to_source : source(0)}) { #{source(1)} }" }
     to(:massign) { join(' = ') }
@@ -99,7 +101,7 @@ module Preval
       parts << rest.to_source if rest
       parts += post.map(&:to_source) if post
       parts += kwargs.map { |(kwarg, value)| value ? "#{kwarg.to_source} #{value.to_source}" : kwarg.to_source } if kwargs
-      parts << kwarg_rest.to_source if kwarg_rest
+      parts << (kwarg_rest.is_a?(Symbol) ? "**#{kwarg_rest}" : kwarg_rest.to_source) if kwarg_rest
       parts << block.to_source if block
 
       parts.join(', ')
