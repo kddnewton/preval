@@ -3,7 +3,7 @@ pull_request_rules:
     conditions:
       - base=master
       - label=dependencies
-      - status-success=Travis CI - Pull Request
+      - status-success=CI
     actions:
       merge:
         strict: true
