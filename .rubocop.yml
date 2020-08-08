@@ -3,8 +3,17 @@ AllCops:
   DisplayStyleGuide: true
   TargetRubyVersion: 2.7
   Exclude:
+  - '{tmp,vendor,yard}/**/*'
   - lib/preval/format.rb
-  - vendor/**/*
+
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 80
+
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
 
 Layout/CommentIndentation:
   Enabled: false
@@ -24,8 +33,20 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Enabled: false
 
+Naming/RescuedExceptionsVariableName:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
+Style/FormatString:
+  EnforcedStyle: percent
+
+Style/FormatStringToken:
+  Enabled: false
+
 Style/NumericPredicate:
+  Enabled: false
+
+Style/PerlBackrefs:
   Enabled: false
