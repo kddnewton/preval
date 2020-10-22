@@ -48,5 +48,11 @@ Style/FormatStringToken:
 Style/NumericPredicate:
   Enabled: false
 
+Style/OptionalBooleanParameter:
+  Enabled: false
+
 Style/PerlBackrefs:
+  Enabled: false
+
+Style/SlicingWithRange:
   Enabled: false
