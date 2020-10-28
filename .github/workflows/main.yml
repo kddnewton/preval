@@ -1,9 +1,13 @@
 name: Main
-on: push
+on:
+- push
+- pull_request
 jobs:
   ci:
     name: CI
     runs-on: ubuntu-latest
+    env:
+      CI: true
     steps:
     - uses: actions/checkout@master
     - uses: ruby/setup-ruby@v1
@@ -15,9 +19,25 @@ jobs:
         key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-gems-
-    - run: bundle config path vendor/bundle
-    - run: bundle install --jobs 4 --retry 3
-    - run: bundle exec rubocop --parallel
-    - run: bundle exec rake test
-      env:
-        CI: true
+    - name: Install dependencies
+      run: |
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
+    - name: Lint and test
+      run: |
+        bundle exec rubocop --parallel
+        bundle exec rake test
+  automerge:
+    name: AutoMerge
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && (github.actor == github.repository_owner || github.actor == 'dependabot[bot]')
+    steps:
+    - uses: actions/github-script@v3
+      with:
+        script: |
+          github.pulls.merge({
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+            pull_number: context.payload.pull_request.number
+          })
