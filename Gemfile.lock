@@ -9,7 +9,7 @@ GEM
     ast (2.4.2)
     bootsnap (1.7.2)
       msgpack (~> 1.0)
-    minitest (5.14.3)
+    minitest (5.14.4)
     msgpack (1.4.2)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
