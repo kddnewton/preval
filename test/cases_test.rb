@@ -27,7 +27,7 @@ class CasesTest < Minitest::Test
     stmts_new
   ].freeze
 
-  TODO_EVENTS = %i[aryptn hshptn].freeze
+  TODO_EVENTS = %i[aryptn fndptn hshptn].freeze
 
   def test_event_types
     events = Ripper::PARSER_EVENTS - EXPECTED_EVENTS - TODO_EVENTS
