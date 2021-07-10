@@ -7,8 +7,8 @@ require 'preval/version'
 Gem::Specification.new do |spec|
   spec.name          = 'preval'
   spec.version       = Preval::VERSION
-  spec.authors       = ['Kevin Deisz']
-  spec.email         = ['kevin.deisz@gmail.com']
+  spec.authors       = ['Kevin Newton']
+  spec.email         = ['kddnewton@gmail.com']
 
   spec.summary       = 'Automatically optimizes your Ruby code'
   spec.homepage      = 'https://github.com/kddeisz/preval'
