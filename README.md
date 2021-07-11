@@ -1,6 +1,6 @@
 # Preval
 
-[![Build Status](https://github.com/kddeisz/preval/workflows/Main/badge.svg)](https://github.com/kddeisz/preval/actions)
+[![Build Status](https://github.com/kddnewton/preval/workflows/Main/badge.svg)](https://github.com/kddnewton/preval/actions)
 [![Gem Version](https://img.shields.io/gem/v/preval.svg)](https://rubygems.org/gems/preval)
 
 `preval` is a gem that hooks into the Ruby compilation process and runs optimizations before it gets loaded by the virtual machine.
@@ -92,7 +92,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/kddeisz/preval.
+Bug reports and pull requests are welcome on GitHub at https://github.com/kddnewton/preval.
 
 ## License
 

@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['kddnewton@gmail.com']
 
   spec.summary       = 'Automatically optimizes your Ruby code'
-  spec.homepage      = 'https://github.com/kddeisz/preval'
+  spec.homepage      = 'https://github.com/kddnewton/preval'
   spec.license       = 'MIT'
 
   spec.files         =
