@@ -1,20 +1,28 @@
 # frozen_string_literal: true
 
-lib = File.expand_path('lib', __dir__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'preval/version'
+require_relative 'lib/preval/version'
+
+version = Preval::VERSION
+repository = 'https://github.com/kddnewton/preval'
 
 Gem::Specification.new do |spec|
   spec.name          = 'preval'
-  spec.version       = Preval::VERSION
+  spec.version       = version
   spec.authors       = ['Kevin Newton']
   spec.email         = ['kddnewton@gmail.com']
 
   spec.summary       = 'Automatically optimizes your Ruby code'
-  spec.homepage      = 'https://github.com/kddnewton/preval'
+  spec.homepage      = repository
   spec.license       = 'MIT'
 
-  spec.files         =
+  spec.metadata = {
+    'bug_tracker_uri' => "#{repository}/issues",
+    'changelog_uri' => "#{repository}/blob/v#{version}/CHANGELOG.md",
+    'source_code_uri' => repository,
+    'rubygems_mfa_required' => 'true'
+  }
+
+  spec.files =
     Dir.chdir(__dir__) do
       `git ls-files -z`.split("\x0").reject do |f|
         f.match(%r{^(test|spec|features)/})

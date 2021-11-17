@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    preval (0.6.0)
+    preval (0.6.1)
 
 GEM
   remote: https://rubygems.org/
@@ -35,7 +35,7 @@ GEM
     rubocop-ast (1.13.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
-    ruby2_keywords (0.0.4)
+    ruby2_keywords (0.0.5)
     sinatra (2.1.0)
       mustermann (~> 1.0)
       rack (~> 2.2)
