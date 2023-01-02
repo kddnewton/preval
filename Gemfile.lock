@@ -10,7 +10,7 @@ GEM
     bootsnap (1.15.0)
       msgpack (~> 1.2)
     json (2.6.3)
-    minitest (5.16.3)
+    minitest (5.17.0)
     msgpack (1.6.0)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
